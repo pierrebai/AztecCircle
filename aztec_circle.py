@@ -65,11 +65,10 @@ class aztec:
         Increase the logical size of diamond and recenter the tiles.
         """
         self._size += 1
-        if self._half_tile:
-            new_tiles = {}
-            for pos, tile in self._half_tile.items():
-                new_tiles[(pos[0]+1, pos[1]+1)] = tile
-            self._half_tile = new_tiles
+        new_tiles = {}
+        for pos, tile in self._half_tile.items():
+            new_tiles[(pos[0]+1, pos[1]+1)] = tile
+        self._half_tile = new_tiles
         self.reactor.increase_size(self, self._size)
 
     def _remove_collisions(self):
