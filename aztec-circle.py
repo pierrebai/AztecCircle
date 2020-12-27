@@ -155,34 +155,80 @@ class aztec:
                     continue
                 is_horizontal = self._rnd.next()
                 if is_horizontal:
-                    self._tiles[(x,   y  )] = tile(is_horizontal, False)
+                    self._tiles[(x,   y  )] = \
                     self._tiles[(x+1, y  )] = tile(is_horizontal, False)
-                    self._tiles[(x  , y+1)] = tile(is_horizontal, True)
+                    self._tiles[(x  , y+1)] = \
                     self._tiles[(x+1, y+1)] = tile(is_horizontal, True)
                 else:
-                    self._tiles[(x  , y  )] = tile(is_horizontal, False)
+                    self._tiles[(x  , y  )] = \
                     self._tiles[(x  , y+1)] = tile(is_horizontal, False)
-                    self._tiles[(x+1, y  )] = tile(is_horizontal, True)
+                    self._tiles[(x+1, y  )] = \
                     self._tiles[(x+1, y+1)] = tile(is_horizontal, True)
 
 
+def needs_separator(tiles: dict, pos1: tuple, pos2: tuple) -> int:
+    """
+    0: empty separator
+    1: separator
+    2: linked half-tiles separator
+    """
+    if pos1 in tiles and pos2 in tiles:
+        return [1, 2][tiles[pos1] == tiles[pos2]]
+    else:
+        return [0, 1][pos1 in tiles or pos2 in tiles]
+
+def draw_inter_horizontal(tiles: dict, pos1: tuple, pos2: tuple, line: list):
+    line.append([' ', '|', ' '][needs_separator(tiles, pos1, pos2)])
+
+def draw_inter_horizontal_for_vertical(tiles: dict, x: int, y: int, line: list):
+    horiz_sep = max(needs_separator(tiles, (x-1, y  ), (x  , y  )),
+                    needs_separator(tiles, (x-1, y+1), (x  , y+1)))
+    verti_sep = max(needs_separator(tiles, (x-1, y  ), (x-1, y+1)),
+                    needs_separator(tiles, (x  , y  ), (x  , y+1)))
+    if horiz_sep == 2:
+        line.append('-')
+    elif verti_sep == 2:
+        line.append('|')
+    elif horiz_sep == 1 or verti_sep == 1:
+        line.append('+')
+    else:
+        line.append(' ')
+
+def draw_inter_verticals(tiles: dict, y: int, size: int):
+    line = []
+    for x in range(0, size * 2):
+        draw_inter_horizontal_for_vertical(tiles, x, y, line)
+        draw_inter_vertical(tiles, (x, y), (x, y+1), line)
+    draw_inter_horizontal_for_vertical(tiles, x+1, y, line)
+    print(''.join(line))
+
+def draw_inter_vertical(tiles: dict, pos1: tuple, pos2: tuple, line):
+    line.append(['   ', '---', '   '][needs_separator(tiles, pos1, pos2)])
+
 def draw_aztec_ascii(az: aztec):
-    tile_colors = {}
-    colors = [ ['Y', 'R'], ['B', 'G'], ]
-    lines = []
+    tile_colors = [ ['Y', 'R'], ['B', 'G'] ]
+    tiles = az.tiles()
     for y in range(0, az.size() * 2):
-        lines.append([' '] * (az.size() * 2))
-
-    for pos, tile in az.tiles().items():
-        color = colors[tile.is_horizontal][tile.is_positive]
-        lines[pos[1]][pos[0]] = color
-
-    for line in lines:
+        draw_inter_verticals(tiles, y-1, az.size())
+        line = []
+        for x in range(0, az.size() * 2):
+            pos = (x, y)
+            draw_inter_horizontal(tiles, (x-1, y), pos, line)
+            if pos not in tiles:
+                line.append('   ')
+            else:
+                tile = tiles[pos]
+                color = tile_colors[tile.is_horizontal][tile.is_positive]
+                line.append(f' {color} ')
+        draw_inter_horizontal(tiles, (x, y), (x+1, y), line)
         print(''.join(line))
+    draw_inter_verticals(tiles, y, az.size())
 
 seed = 7
 az = aztec(0, seed)
-for i in range(0, 6):
+for i in range(0, 10):
     az.grow()
     draw_aztec_ascii(az)
-    print('---------------')
+    print('')
+    print('')
+
