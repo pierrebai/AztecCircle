@@ -15,7 +15,8 @@ scene = QGraphicsScene()
 scene_view = QGraphicsView(scene)
 scene_view.setInteractive(False)
 scene_view.setResizeAnchor(QGraphicsView.AnchorViewCenter)
-scene_view.setSceneRect(QRectF())
+scene_view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+scene_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
 scene_react = step_scene_reactor(scene, scene_view)
 #scene_react = simple_scene_reactor(scene, scene_view)
@@ -30,7 +31,7 @@ seed = 7
 az = aztec(0, repeatable_random(seed), scene_react)
 
 timer = QTimer()
-timer.setInterval(10)
+timer.setInterval(20)
 timer.start()
 timer_state = 0
 

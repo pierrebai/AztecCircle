@@ -8,4 +8,4 @@ class simple_scene_reactor(base_scene_reactor):
         self.scene.clear()
         for pos, tile in az.tiles().items():
             self.create_scene_tile(pos, tile)
-        self.scene.update()
+        self.adjust_view_to_fit()

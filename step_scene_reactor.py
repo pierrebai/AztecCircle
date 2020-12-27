@@ -7,7 +7,6 @@ class step_scene_reactor(base_scene_reactor):
         self.new_items = {}
 
     def start_grow(self, az):
-        super(step_scene_reactor, self).start_grow(az)
         self.new_items = {}
 
     def increase_size(self, az, size):
@@ -16,8 +15,9 @@ class step_scene_reactor(base_scene_reactor):
         for pos, item in self.items.items():
             new_pos = (pos[0]+1, pos[1]+1)
             new_items[new_pos] = item
-            item.setRect(*self.pos_to_scene(new_pos), self.tile_size, self.tile_size)
+            item.setPos(*self.pos_to_scene(new_pos))
         self.items = new_items
+        self.adjust_view_to_fit()
 
     def collision(self, az, pos1, pos2):
         self.scene.removeItem(self.items[pos1])
@@ -25,7 +25,8 @@ class step_scene_reactor(base_scene_reactor):
 
     def move(self, az, pos1, pos2):
         item = self.items[pos1]
-        item.setRect(*self.pos_to_scene(pos2), self.tile_size, self.tile_size)
+        item.setPos(*self.pos_to_scene(pos2))
+        #item.setRect(*self.pos_to_scene(pos2), self.tile_size, self.tile_size)
         self.new_items[pos2] = item
 
     def fill(self, az, pos, tile):
