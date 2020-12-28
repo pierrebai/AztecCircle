@@ -142,7 +142,7 @@ class aztec:
             for y in self.coord_range():
                 if not self._is_hole(x, y):
                     continue
-                is_horizontal = self.tile_generator.next()
+                is_horizontal = self.tile_generator.is_next_horizontal()
                 tile_to_place = available_tiles[is_horizontal]
                 for t in tile_to_place:
                     pos = (x + t.placement[0], y + t.placement[1])

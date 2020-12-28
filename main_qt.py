@@ -1,26 +1,22 @@
 from aztec_circle import aztec
 from simple_scene_reactor import simple_scene_reactor
 from step_scene_reactor import step_scene_reactor
-from repeatable_random import repeatable_random
-
-from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIntValidator
-
-import sys
+from tile_generator import sequence_tile_generator
+from qt_helpers import *
 
 class aztec_scene:
     def __init__(self):
         self.scene_react = step_scene_reactor()
         #self.scene_react = simple_scene_reactor()
-        self.seed = 7
+        self.generator = sequence_tile_generator(7, "r")
         self.step_name = ""
         self.reset()
 
     def reset(self):
         self.step_state = 0
         self.scene_react.reset()
-        self.az = aztec(1, repeatable_random(self.seed), self.scene_react)
+        self.generator.reset()
+        self.az = aztec(1, self.generator, self.scene_react)
 
     def _step0(self):
         self.az.reactor.start_grow(self.az)
@@ -53,73 +49,35 @@ class aztec_scene:
         func(self)
         self.step_state = (self.step_state+1) % len(aztec_scene.steps)
        
-app = QApplication(sys.argv)
+app = create_app()
 
 az_scene = aztec_scene()
+steps = list(map(lambda i: i[1][1], sorted(aztec_scene.steps.items())))
 
-control_dock = QDockWidget("Controls")
-control_dock.setFeatures(QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
-control_container = QWidget()
-control_container.setMinimumWidth(150)
-control_layout = QVBoxLayout(control_container)
-control_dock.setWidget(control_container)
+control_dock, control_layout = create_dock("Controls")
 
-step_name_label = QLabel("Current Step")
-control_layout.addWidget(step_name_label)
+step_name_list = create_list("Current Step", steps, control_layout)
+step_button = create_button("Step", control_layout)
+play_button = create_button("Play", control_layout)
+stop_button = create_button("Stop", control_layout)
+reset_button = create_button("Reset", control_layout)
+delay_box = create_number_range("Step delay (ms)", 0, 1000, 20, control_layout)
+add_stretch(control_layout)
 
-step_name_list = QListWidget()
-step_name_list.setEnabled(False)
-for index, (step, name) in sorted(aztec_scene.steps.items()):
-    step_name_list.addItem(name)
-control_layout.addWidget(step_name_list)
+gen_dock, gen_layout = create_dock("Tiles Generation")
 
-reset_button = QPushButton("Reset")
-control_layout.addWidget(reset_button)
+gen_sequence = create_text("Tiles sequence (h, v, r)", "hvr vvhrr", az_scene.generator.sequence(), gen_layout)
+seed_box = create_number_text("Random seed", 0, 2000000000, az_scene.generator.random_seed, gen_layout)
+add_stretch(gen_layout)
 
-step_button = QPushButton("Step")
-control_layout.addWidget(step_button)
+window = create_main_window("Aztec Artic Circle", az_scene.scene_react.view)
+add_dock(window, control_dock)
+add_dock(window, gen_dock)
 
-play_button = QPushButton("Play")
-control_layout.addWidget(play_button)
-
-stop_button = QPushButton("Stop")
-control_layout.addWidget(stop_button)
-
-delay_label = QLabel()
-delay_label.setText("Step delay")
-control_layout.addWidget(delay_label)
-
-delay_box = QSpinBox()
-delay_box.setRange(0, 1000)
-delay_box.setValue(20)
-control_layout.addWidget(delay_box)
-
-seed_label = QLabel()
-seed_label.setText("Random seed")
-control_layout.addWidget(seed_label)
-
-seed_box = QLineEdit()
-seed_box.setValidator(QIntValidator(0, 2000000000))
-seed_box.setText(str(az_scene.seed))
-control_layout.addWidget(seed_box)
-
-control_layout.addStretch()
-
-window = QMainWindow()
-window.setWindowTitle("Aztec Artic Circle")
-window.resize(800, 600)
-window.setCentralWidget(az_scene.scene_react.view)
-window.addDockWidget(Qt.LeftDockWidgetArea, control_dock)
-window.show()
-
-timer = QTimer()
-timer.setInterval(delay_box.value())
-
+timer = create_timer(int(delay_box.value()))
 
 def update_step_name():
-    items = step_name_list.findItems(az_scene.step_name, Qt.MatchExactly)
-    if len(items) > 0:
-        step_name_list.setCurrentItem(items[0])
+    select_in_list(az_scene.step_name, step_name_list)
 
 @reset_button.clicked.connect
 def on_reset():
@@ -144,19 +102,20 @@ def on_delay_changed(value):
 
 @seed_box.textChanged.connect
 def on_seed(value):
-
     try:
         new_seed = int(value)
     except:
         return
-    az_scene.seed = new_seed
-    az_scene.reset()
+    az_scene.generator.seed = new_seed
+
+@gen_sequence.textChanged.connect
+def on_sequence(value):
+    az_scene.generator.set_sequence(value)
 
 @timer.timeout.connect
 def on_timer():
     az_scene.step()
     update_step_name()
 
-az_scene.reset()
-app.exec_()
+start_app(app, window)
 

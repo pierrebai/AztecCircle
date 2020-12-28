@@ -27,7 +27,7 @@ class half_tile:
         Verify if the tile is the opposite half of the other.
         Beware: it is possible to have two opposite next to each other
                 and not be the same tile. The relative position (horizontal
-                or vertical) of teh tiles must be taken into consideration.
+                or vertical) of the tiles must be taken into consideration.
         """
         return self.is_positive == other.is_positive and self.is_horizontal == other.is_horizontal and self.is_high_part == False and other.is_high_part == True
 
