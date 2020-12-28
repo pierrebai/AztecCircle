@@ -66,6 +66,7 @@ class sequence_tile_generator(random_tile_generator):
         return self._sequence
 
     def set_sequence(self, sequence: str):
+        sequence = sequence if sequence else 'r'
         clean_sequence = list(filter(lambda c: c in 'hvr', sequence.lower()))
         clean_sequence = clean_sequence if clean_sequence else 'r'
 
