@@ -19,6 +19,7 @@ class step_scene_reactor(base_scene_reactor):
 
     def __init__(self, *args, **kwargs):
         super(step_scene_reactor, self).__init__(*args, **kwargs)
+        self.show_collisions = True
         self.reset()
 
     def reset(self):
@@ -33,6 +34,8 @@ class step_scene_reactor(base_scene_reactor):
         self.adjust_view_to_fit()
 
     def collision_found(self, az, pos):
+        if not self.show_collisions:
+            return
         scene_pos = self.pos_to_scene(pos)
         item = QGraphicsPolygonItem(step_scene_reactor.cross_polygon)
         item.setPos(*scene_pos)

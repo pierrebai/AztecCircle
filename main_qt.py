@@ -12,7 +12,7 @@ import sys
 class aztec_scene:
     def __init__(self):
         self.scene_react = step_scene_reactor()
-        #scene_react = simple_scene_reactor()
+        #self.scene_react = simple_scene_reactor()
         self.seed = 7
         self.step_name = ""
         self.reset()
@@ -23,38 +23,35 @@ class aztec_scene:
         self.az = aztec(1, repeatable_random(self.seed), self.scene_react)
 
     def _step0(self):
-        self.step_name = "Grow diamond"
         self.az.reactor.start_grow(self.az)
         self.az.increase_size()
 
     def _step1(self):
-        self.step_name = "Find collisions"
         self.az.find_collisions()
 
     def _step2(self):
-        self.step_name = "Remove collisions"
         self.az.remove_collisions()
 
     def _step3(self):
-        self.step_name = "Move tiles"
         self.az.move_tiles()
 
     def _step4(self):
-        self.step_name = "Fill holes"
         self.az.fill_holes()
         self.az.reactor.end_grow(self.az)
 
+    steps = {
+        0: (_step0, "Grow diamond"),
+        1: (_step1, "Find collisions"),
+        2: (_step2, "Remove collisions"),
+        3: (_step3, "Move tiles"),
+        4: (_step4, "Fill holes"),
+    }
+
     def step(self):
-        actions = {
-            0: self._step0,
-            1: self._step1,
-            2: self._step2,
-            3: self._step3,
-            4: self._step4,
-        }
-        func = actions[self.step_state]
-        func()
-        self.step_state = (self.step_state+1) % len(actions)
+        func, name = aztec_scene.steps[self.step_state]
+        self.step_name = name
+        func(self)
+        self.step_state = (self.step_state+1) % len(aztec_scene.steps)
        
 app = QApplication(sys.argv)
 
@@ -67,8 +64,14 @@ control_container.setMinimumWidth(150)
 control_layout = QVBoxLayout(control_container)
 control_dock.setWidget(control_container)
 
-step_name_label = QLabel("Step:")
+step_name_label = QLabel("Current Step")
 control_layout.addWidget(step_name_label)
+
+step_name_list = QListWidget()
+step_name_list.setEnabled(False)
+for index, (step, name) in sorted(aztec_scene.steps.items()):
+    step_name_list.addItem(name)
+control_layout.addWidget(step_name_list)
 
 reset_button = QPushButton("Reset")
 control_layout.addWidget(reset_button)
@@ -114,7 +117,9 @@ timer.setInterval(delay_box.value())
 
 
 def update_step_name():
-    step_name_label.setText("Step: " + az_scene.step_name)
+    items = step_name_list.findItems(az_scene.step_name, Qt.MatchExactly)
+    if len(items) > 0:
+        step_name_list.setCurrentItem(items[0])
 
 @reset_button.clicked.connect
 def on_reset():
