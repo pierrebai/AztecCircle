@@ -6,8 +6,8 @@ from qt_helpers import *
 
 class aztec_scene:
     def __init__(self):
-        #self.scene_react = step_scene_reactor()
-        self.scene_react = simple_scene_reactor()
+        self.scene_react = step_scene_reactor()
+        #self.scene_react = simple_scene_reactor()
         self.generator = sequence_tile_generator(7, "r")
         self.step_name = ""
         self.reset()
@@ -22,9 +22,6 @@ class aztec_scene:
         self.az.reactor.start_grow(self.az)
         self.az.increase_size()
 
-    def _find_collisions_step(self):
-        self.az.find_collisions()
-
     def _remove_collisions_step(self):
         self.az.remove_collisions()
 
@@ -37,10 +34,9 @@ class aztec_scene:
 
     steps = {
         0: (_increase_size_step, "Grow diamond"),
-        1: (_find_collisions_step, "Find collisions"),
-        2: (_remove_collisions_step, "Remove collisions"),
-        3: (_move_tiles_step, "Move tiles"),
-        4: (_fill_holes_step, "Fill holes"),
+        1: (_remove_collisions_step, "Remove collisions"),
+        2: (_move_tiles_step, "Move tiles"),
+        3: (_fill_holes_step, "Fill holes"),
     }
 
     def step(self):

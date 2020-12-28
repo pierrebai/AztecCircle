@@ -9,11 +9,11 @@ class half_tile:
         self.movement = half_tile._tile_to_movements[is_horizontal][is_positive]
         self.placement = half_tile._tile_to_placements[is_horizontal][is_positive][is_high_part]
 
-    def move(self, pos: tuple) -> tuple:
+    def move_position(self, x: int, y: int) -> tuple:
         """
         Move a position in the desired direction of the tile.
         """
-        return (pos[0] + self.movement[0], pos[1]+self.movement[1])
+        return (x + self.movement[0], y + self.movement[1])
 
     def is_opposite(self, other) -> bool:
         """

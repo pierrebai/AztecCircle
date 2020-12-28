@@ -12,15 +12,14 @@ class aztec:
         """
         self._size = 0
 
+        self.tile_generator = tile_generator
+        self.reactor = react
+
         self._squares = []
         self._tmp_squares = []
         self._origin = 0
         self._allocate_tiles(100)
 
-        self._collisions = set()
-
-        self.tile_generator = tile_generator
-        self.reactor = react
         self.grow_to_size(target_size)
 
     def _allocate_tiles(self, amount: int):
@@ -31,28 +30,33 @@ class aztec:
         if amount < old_amount:
             return
 
-        skip = (amount - old_amount) // 2
+        skip, self._squares, self._tmp_squares = aztec.reallocate_data(old_amount, amount, self._squares, self._tmp_squares)
+        self._origin += skip
+        self.reactor.reallocate(self, old_amount, amount)
+
+    @staticmethod
+    def reallocate_data(old_amount: int, new_amount: int, old_data: list, old_tmp: list):
+        skip = (new_amount - old_amount) // 2
 
         new_squares = []
-        self._tmp_squares = []
+        new_tmp_squares = []
 
         for i in range(0, skip):
-            new_squares.append([ None ] * amount)
-            self._tmp_squares.append([ None ] * amount)
+            new_squares.append([ None ] * new_amount)
+            new_tmp_squares.append([ None ] * new_amount)
 
-        for old_line in self._squares:
+        for old_line in old_data:
             line = [ None ] * skip
             line.extend(old_line)
             line.extend([ None ] * skip)
             new_squares.append(line)
-            self._tmp_squares.append([ None ] * amount)
+            new_tmp_squares.append([ None ] * new_amount)
 
         for i in range(0, skip):
-            new_squares.append([ None ] * amount)
-            self._tmp_squares.append([ None ] * amount)
+            new_squares.append([ None ] * new_amount)
+            new_tmp_squares.append([ None ] * new_amount)
 
-        self._squares = new_squares
-        self._origin = skip
+        return skip, new_squares, new_tmp_squares
 
     def grow_to_size(self, target_size: int):
         """
@@ -69,7 +73,6 @@ class aztec:
         """
         self.reactor.start_grow(self)
         self.increase_size()
-        self.find_collisions()
         self.remove_collisions()
         self.move_tiles()
         self.fill_holes()
@@ -80,6 +83,12 @@ class aztec:
         Return the size of the aztec diamond.
         """
         return self._size
+
+    def center(self) -> int:
+        """
+        Return the coordinate of the center of the diamond.
+        """
+        return len(self._squares) // 2
 
     def count_squares(self) -> int:
         """
@@ -130,38 +139,25 @@ class aztec:
             self._allocate_tiles(len(self._squares) * 2)
         self.reactor.increase_size(self, self._size)
 
-    def find_collisions(self):
+    def remove_collisions(self):
         """
-        Find the tiles about to collide.
+        Find and remove the tiles about to collide.
         """
         tiles = self._squares
         for y in self.full_range():
             for x in self.partial_range(y):
-                pos = (x, y)
-                if pos in self._collisions:
-                    continue
                 tile = tiles[x][y]
                 if not tile:
                     continue
-                other_pos = tile.move(pos)
-                other_tile = tiles[other_pos[0]][other_pos[1]]
+                other_x, other_y = tile.move_position(x, y)
+                other_tile = tiles[other_x][other_y]
                 if not other_tile:
                     continue
                 if tile.is_opposite(other_tile):
-                    self.reactor.collision_found(self, pos)
-                    self.reactor.collision_found(self, other_pos)
-                    self._collisions.add(pos)
-                    self._collisions.add(other_pos)
-
-    def remove_collisions(self):
-        """
-        Remove the tiles about to collide.
-        """
-        tiles = self._squares
-        for x, y in self._collisions:
-            tiles[x][y] = None
-            self.reactor.collision_removed(self, (x, y))
-        self._collisions.clear()
+                    self.reactor.collision(self, x, y)
+                    self.reactor.collision(self, other_x, other_y)
+                    tiles[x][y] = None
+                    tiles[other_x][other_y] = None
 
     def move_tiles(self):
         """
@@ -175,13 +171,12 @@ class aztec:
         tiles = self._squares
         for y in self.full_range():
             for x in self.partial_range(y):
-                pos = (x, y)
                 tile = tiles[x][y]
                 if not tile:
                     continue
-                new_pos = tile.move(pos)
-                self.reactor.move(self, pos, new_pos)
-                dest_tiles[new_pos[0]][new_pos[1]] = tile
+                new_x, new_y = tile.move_position(x, y)
+                self.reactor.move(self, x, y, new_x, new_y)
+                dest_tiles[new_x][new_y] = tile
         self._squares = dest_tiles
         self._tmp_squares = tiles
 
@@ -201,7 +196,7 @@ class aztec:
                     new_x = x + t.placement[0]
                     new_y = y + t.placement[1]
                     tiles[new_x][new_y] = t
-                    self.reactor.fill(self, (new_x, new_y), t)
+                    self.reactor.fill(self, new_x, new_y, t)
 
     def _noop(self):
         """

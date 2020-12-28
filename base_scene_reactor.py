@@ -26,7 +26,7 @@ class base_scene_reactor(reactor):
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
 
-    def reset(self):
+    def reallocate_scene(self):
         self.scene = QGraphicsScene()
 
         self.view.setScene(self.scene)
@@ -35,14 +35,17 @@ class base_scene_reactor(reactor):
         self.view.setSceneRect(QRectF())
 
         self.view.fitInView(self.scene.sceneRect().marginsAdded(QMarginsF(10, 10, 10, 10)), Qt.KeepAspectRatio)
+        
+    def reset(self):
+        self.reallocate_scene()
 
-    def create_scene_tile(self, pos: tuple, tile) -> QGraphicsItem:
+    def create_scene_tile(self, x: int, y: int, tile) -> QGraphicsItem:
         items = []
 
-        scene_pos = self.pos_to_scene(pos)
+        x, y = self.pos_to_scene(x, y)
 
         item = QGraphicsRectItem(0, 0, tile_size, tile_size)
-        item.setPos(*scene_pos)
+        item.setPos(x, y)
         item.setBrush(base_scene_reactor.tile_to_brush(tile))
         item.setPen(base_scene_reactor.tile_to_pen(tile))
         items.append(item)
@@ -50,7 +53,7 @@ class base_scene_reactor(reactor):
         start, end = base_scene_reactor.ranges[tile.is_horizontal][tile.is_high_part]
         for i in range(start, end):
             item = QGraphicsLineItem(QLineF(base_scene_reactor.points[i], base_scene_reactor.points[i+1]))
-            item.setPos(*scene_pos)
+            item.setPos(x, y)
             item.setPen(base_scene_reactor.black_pen)
             items.append(item)
 
@@ -67,8 +70,8 @@ class base_scene_reactor(reactor):
             #self.view.fitInView(QRectF(0, 0, 50, 50).united(self.scene.sceneRect().marginsAdded(QMarginsF(100, 100, 100, 100))), Qt.KeepAspectRatio)
             self.view.fitInView(self.scene.sceneRect().marginsAdded(QMarginsF(50, 50, 50, 50)), Qt.KeepAspectRatio)
 
-    def pos_to_scene(self, pos: tuple) -> tuple:
-        return (pos[0] * tile_size, pos[1] * tile_size)
+    def pos_to_scene(self, x: int, y: int) -> tuple:
+        return (x * tile_size, y * tile_size)
 
     @staticmethod
     def tile_to_brush(tile) -> QBrush:
