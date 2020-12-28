@@ -1,12 +1,21 @@
 from base_scene_reactor import base_scene_reactor, tile_size
 
-from PyQt5.QtGui import QBrush, QColor, QPen
-from PyQt5.QtWidgets import QGraphicsRectItem
+from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF
+from PyQt5.QtWidgets import QGraphicsPolygonItem
+from PyQt5.QtCore import QRectF, QPointF, QLineF, Qt
 
 class step_scene_reactor(base_scene_reactor):
     red_color = QColor(255, 40, 40)
     red_brush = QBrush(red_color)
     red_pen = QPen(red_color)
+    cross_delta_1 = 3
+    cross_delta_2 = 1
+    cross_polygon = QPolygonF([
+         QPointF(cross_delta_2, cross_delta_1), QPointF(cross_delta_1, cross_delta_2), QPointF(tile_size / 2, cross_delta_1),
+         QPointF(tile_size - cross_delta_1, cross_delta_2), QPointF(tile_size - cross_delta_2, cross_delta_1), QPointF(tile_size - cross_delta_1, tile_size / 2),
+         QPointF(tile_size - cross_delta_2, tile_size - cross_delta_1), QPointF(tile_size - cross_delta_1, tile_size - cross_delta_2), QPointF(tile_size / 2, tile_size - cross_delta_1),
+         QPointF(cross_delta_1, tile_size - cross_delta_2), QPointF(cross_delta_2, tile_size - cross_delta_1), QPointF(cross_delta_1, tile_size / 2),
+    ])
 
     def __init__(self, *args, **kwargs):
         super(step_scene_reactor, self).__init__(*args, **kwargs)
@@ -25,7 +34,7 @@ class step_scene_reactor(base_scene_reactor):
 
     def collision_found(self, az, pos):
         scene_pos = self.pos_to_scene(pos)
-        item = QGraphicsRectItem(2, 2, tile_size - 4, tile_size - 4)
+        item = QGraphicsPolygonItem(step_scene_reactor.cross_polygon)
         item.setPos(*scene_pos)
         item.setBrush(step_scene_reactor.red_brush)
         item.setPen(step_scene_reactor.red_pen)
