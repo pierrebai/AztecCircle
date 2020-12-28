@@ -11,7 +11,8 @@ class aztec:
         Create a filled aztec diamond of the given size.
         """
         self._size = 0
-        self._half_tile = {}
+        self._half_tiles = {}
+        self._collisions = set()
         self.tile_generator = tile_generator
         self.reactor = react
         self._origin = 0
@@ -32,6 +33,7 @@ class aztec:
         """
         self.reactor.start_grow(self)
         self.increase_size()
+        self.find_collisions()
         self.remove_collisions()
         self.move_tiles()
         self.fill_holes()
@@ -53,7 +55,7 @@ class aztec:
         """
         Return all half-tiles of the aztec diamond.
         """
-        return self._half_tile
+        return self._half_tiles
 
     def is_corner(self, x: int, y: int) -> bool:
         """
@@ -76,32 +78,42 @@ class aztec:
         self._origin -= 1
         self.reactor.increase_size(self, self._size)
 
+    def find_collisions(self):
+        """
+        Find the tiles about to collide.
+        """
+        for pos, tile in self._half_tiles.items():
+            if pos in self._collisions:
+                continue
+            other_pos = tile.move(pos)
+            if other_pos not in self._half_tiles:
+                continue
+            other_tile = self._half_tiles[other_pos]
+            if tile.is_opposite(other_tile):
+                self.reactor.collision_found(self, pos)
+                self.reactor.collision_found(self, other_pos)
+                self._collisions.add(pos)
+                self._collisions.add(other_pos)
+
     def remove_collisions(self):
         """
         Remove the tiles about to collide.
         """
-        new_tiles = self._half_tile.copy()
-        for pos, tile in self._half_tile.items():
-            other_pos = tile.move(pos)
-            if other_pos not in new_tiles:
-                continue
-            other_tile = new_tiles[other_pos]
-            if tile.is_opposite(other_tile):
-                self.reactor.collision(self, pos, other_pos)
-                del new_tiles[pos]
-                del new_tiles[other_pos]
-        self._half_tile = new_tiles
+        for pos in self._collisions:
+            del self._half_tiles[pos]
+            self.reactor.collision_removed(self, pos)
+        self._collisions.clear()
 
     def move_tiles(self):
         """
         Move the tiles in their desired direction.
         """
         new_tiles = {}
-        for pos, tile in self._half_tile.items():
+        for pos, tile in self._half_tiles.items():
             new_pos = tile.move(pos)
             self.reactor.move(self, pos, new_pos)
             new_tiles[new_pos] = tile
-        self._half_tile = new_tiles
+        self._half_tiles = new_tiles
 
     def _is_hole(self, x: int, y: int) -> bool:
         """
@@ -111,13 +123,13 @@ class aztec:
             return False
         if self.is_corner(x+1, y+1):
             return False
-        if (x,y) in self._half_tile:
+        if (x,y) in self._half_tiles:
             return False
-        if (x+1,y) in self._half_tile:
+        if (x+1,y) in self._half_tiles:
             return False
-        if (x,y+1) in self._half_tile:
+        if (x,y+1) in self._half_tiles:
             return False
-        if (x+1,y+1) in self._half_tile:
+        if (x+1,y+1) in self._half_tiles:
             return False
         return True
 
@@ -134,7 +146,7 @@ class aztec:
                 tile_to_place = available_tiles[is_horizontal]
                 for t in tile_to_place:
                     pos = (x + t.placement[0], y + t.placement[1])
-                    self._half_tile[pos] = t
+                    self._half_tiles[pos] = t
                     self.reactor.fill(self, pos, t)
 
     def _noop(self):

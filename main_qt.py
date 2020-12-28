@@ -28,14 +28,18 @@ class aztec_scene:
         self.az.increase_size()
 
     def _step1(self):
+        self.step_name = "Find collisions"
+        self.az.find_collisions()
+
+    def _step2(self):
         self.step_name = "Remove collisions"
         self.az.remove_collisions()
 
-    def _step2(self):
+    def _step3(self):
         self.step_name = "Move tiles"
         self.az.move_tiles()
 
-    def _step3(self):
+    def _step4(self):
         self.step_name = "Fill holes"
         self.az.fill_holes()
         self.az.reactor.end_grow(self.az)
@@ -46,6 +50,7 @@ class aztec_scene:
             1: self._step1,
             2: self._step2,
             3: self._step3,
+            4: self._step4,
         }
         func = actions[self.step_state]
         func()

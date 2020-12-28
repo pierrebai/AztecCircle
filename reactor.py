@@ -15,10 +15,17 @@ class reactor:
         """
         pass
 
-    def collision(self, az, pos1, pos2):
+    def collision_found(self, az, pos):
         """
         Called when the tiles at the given position are about to collide.
         (Called before the tiles are removed.)
+        """
+        pass
+
+    def collision_removed(self, az, pos):
+        """
+        Called when the tile at the given position is about to collide with another.
+        (Called after the tile is removed.)
         """
         pass
 
