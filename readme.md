@@ -14,9 +14,9 @@ explaining what and how to install what is needed:
 
 - Python 3.7+: download and install from https://www.python.org/downloads/
 - Clone the git repository: enter the command ```git clone https://github.com/pierrebai/AztecCircle.git```
-- pipenv: enter the command ```pip install pipenv```
-- Qt: enter the command ```pipenv install```
-- Run the program: enter the command ```pipenv run main_qt.py```
+- pipenv: isolate Python dependencies in a virtual environment: enter the command ```pip install pipenv```
+- Qt libraries: enter the command ```pipenv install```
+- Run the program: enter the command ```pipenv run python main_qt.py```
 
 Here is how the Qt version looks:
 
