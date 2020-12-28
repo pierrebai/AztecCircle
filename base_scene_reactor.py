@@ -1,6 +1,6 @@
 from reactor import reactor
 
-from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF
+from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF, QPainter
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsItem, QGraphicsRectItem, QGraphicsPolygonItem, QGraphicsLineItem
 from PyQt5.QtCore import QMarginsF, QRectF, QPointF, QLineF, Qt
 
@@ -16,9 +16,25 @@ class base_scene_reactor(reactor):
     points = [QPointF(0, 0), QPointF(tile_size, 0), QPointF(tile_size, tile_size), QPointF(0, tile_size), QPointF(0, 0), QPointF(tile_size, 0), QPointF(tile_size, tile_size), QPointF(0, tile_size)]
     ranges = [[(3, 6), (1, 4)], [(2, 5), (0, 3)]]
 
-    def __init__(self, scene: QGraphicsScene, view: QGraphicsView):
-        self.scene = scene
-        self.view = view
+    def __init__(self):
+        self.scene = QGraphicsScene()
+
+        self.view = QGraphicsView(self.scene)
+        self.view.setInteractive(False)
+        self.view.setResizeAnchor(QGraphicsView.AnchorViewCenter)
+        self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.view.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+
+    def reset(self):
+        self.scene = QGraphicsScene()
+
+        self.view.setScene(self.scene)
+        self.view.resetTransform()
+        self.view.resetCachedContent()
+        self.view.setSceneRect(QRectF())
+
+        self.view.fitInView(self.scene.sceneRect().marginsAdded(QMarginsF(10, 10, 10, 10)), Qt.KeepAspectRatio)
 
     def create_scene_tile(self, pos: tuple, tile) -> QGraphicsItem:
         items = []
@@ -48,7 +64,8 @@ class base_scene_reactor(reactor):
         viewOrigin = self.view.rect().topLeft()
         sceneOrigin = self.view.mapFromScene(self.scene.sceneRect().translated(-15, -15).topLeft())
         if viewOrigin.x() >= sceneOrigin.x() or viewOrigin.y() >= sceneOrigin.y():
-            self.view.fitInView(QRectF(0, 0, 200, 200).united(self.scene.sceneRect().marginsAdded(QMarginsF(100, 100, 100, 100))), Qt.KeepAspectRatio)
+            #self.view.fitInView(QRectF(0, 0, 50, 50).united(self.scene.sceneRect().marginsAdded(QMarginsF(100, 100, 100, 100))), Qt.KeepAspectRatio)
+            self.view.fitInView(self.scene.sceneRect().marginsAdded(QMarginsF(50, 50, 50, 50)), Qt.KeepAspectRatio)
 
     def pos_to_scene(self, pos: tuple) -> tuple:
         return (pos[0] * tile_size, pos[1] * tile_size)

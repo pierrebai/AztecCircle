@@ -3,14 +3,12 @@ from base_scene_reactor import base_scene_reactor
 class step_scene_reactor(base_scene_reactor):
     def __init__(self, *args, **kwargs):
         super(step_scene_reactor, self).__init__(*args, **kwargs)
-        self.items = {}
-        self.new_items = {}
+        self.reset()
 
     def reset(self):
+        super(step_scene_reactor, self).reset()
         self.items = {}
         self.new_items = {}
-        self.scene.clear()
-        self.view.fitInView(self.scene.sceneRect())
 
     def start_grow(self, az):
         self.new_items = {}

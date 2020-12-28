@@ -10,9 +10,9 @@ from PyQt5.QtGui import QIntValidator
 import sys
 
 class aztec_scene:
-    def __init__(self, scene, scene_view):
-        self.scene_react = step_scene_reactor(scene, scene_view)
-        #scene_react = simple_scene_reactor(scene, scene_view)
+    def __init__(self):
+        self.scene_react = step_scene_reactor()
+        #scene_react = simple_scene_reactor()
         self.seed = 7
         self.step_name = ""
         self.reset()
@@ -50,18 +50,10 @@ class aztec_scene:
         func = actions[self.step_state]
         func()
         self.step_state = (self.step_state+1) % len(actions)
-
-        
-
+       
 app = QApplication(sys.argv)
 
-scene = QGraphicsScene()
-
-scene_view = QGraphicsView(scene)
-scene_view.setInteractive(False)
-scene_view.setResizeAnchor(QGraphicsView.AnchorViewCenter)
-scene_view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-scene_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+az_scene = aztec_scene()
 
 control_dock = QDockWidget("Controls")
 control_dock.setFeatures(QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
@@ -100,6 +92,7 @@ control_layout.addWidget(seed_label)
 
 seed_box = QLineEdit()
 seed_box.setValidator(QIntValidator(0, 2000000000))
+seed_box.setText(str(az_scene.seed))
 control_layout.addWidget(seed_box)
 
 control_layout.addStretch()
@@ -107,16 +100,13 @@ control_layout.addStretch()
 window = QMainWindow()
 window.setWindowTitle("Aztec Artic Circle")
 window.resize(800, 600)
-window.setCentralWidget(scene_view)
+window.setCentralWidget(az_scene.scene_react.view)
 window.addDockWidget(Qt.LeftDockWidgetArea, control_dock)
 window.show()
 
 timer = QTimer()
 timer.setInterval(delay_box.value())
 
-az_scene = aztec_scene(scene, scene_view)
-
-seed_box.setText(str(az_scene.seed))
 
 def update_step_name():
     step_name_label.setText("Step: " + az_scene.step_name)
@@ -157,5 +147,6 @@ def on_timer():
     az_scene.step()
     update_step_name()
 
+az_scene.reset()
 app.exec_()
 
