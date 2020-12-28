@@ -6,8 +6,8 @@ from qt_helpers import *
 
 class aztec_scene:
     def __init__(self):
-        self.scene_react = step_scene_reactor()
-        #self.scene_react = simple_scene_reactor()
+        #self.scene_react = step_scene_reactor()
+        self.scene_react = simple_scene_reactor()
         self.generator = sequence_tile_generator(7, "r")
         self.step_name = ""
         self.reset()
@@ -18,29 +18,29 @@ class aztec_scene:
         self.generator.reset()
         self.az = aztec(1, self.generator, self.scene_react)
 
-    def _step0(self):
+    def _increase_size_step(self):
         self.az.reactor.start_grow(self.az)
         self.az.increase_size()
 
-    def _step1(self):
+    def _find_collisions_step(self):
         self.az.find_collisions()
 
-    def _step2(self):
+    def _remove_collisions_step(self):
         self.az.remove_collisions()
 
-    def _step3(self):
+    def _move_tiles_step(self):
         self.az.move_tiles()
 
-    def _step4(self):
+    def _fill_holes_step(self):
         self.az.fill_holes()
         self.az.reactor.end_grow(self.az)
 
     steps = {
-        0: (_step0, "Grow diamond"),
-        1: (_step1, "Find collisions"),
-        2: (_step2, "Remove collisions"),
-        3: (_step3, "Move tiles"),
-        4: (_step4, "Fill holes"),
+        0: (_increase_size_step, "Grow diamond"),
+        1: (_find_collisions_step, "Find collisions"),
+        2: (_remove_collisions_step, "Remove collisions"),
+        3: (_move_tiles_step, "Move tiles"),
+        4: (_fill_holes_step, "Fill holes"),
     }
 
     def step(self):
@@ -70,14 +70,23 @@ gen_sequence = create_text("Tiles sequence (h, v, r)", "hvr vvhrr", az_scene.gen
 seed_box = create_number_text("Random seed", 0, 2000000000, az_scene.generator.random_seed, gen_layout)
 add_stretch(gen_layout)
 
+stats_dock, stats_layout = create_dock("Statistics")
+
+tiles_count_label = create_text("Tiles count: ", str(0), str(0), stats_layout)
+tiles_count_label.setEnabled(False)
+add_stretch(stats_layout)
+
 window = create_main_window("Aztec Artic Circle", az_scene.scene_react.view)
 add_dock(window, control_dock)
 add_dock(window, gen_dock)
+add_dock(window, stats_dock)
 
 timer = create_timer(int(delay_box.value()))
 
-def update_step_name():
+def aztec_step():
+    az_scene.step()
     select_in_list(az_scene.step_name, step_name_list)
+    tiles_count_label.setText(str(az_scene.az.count_tiles()))
 
 @reset_button.clicked.connect
 def on_reset():
@@ -85,8 +94,7 @@ def on_reset():
 
 @step_button.clicked.connect
 def on_step():
-    az_scene.step()
-    update_step_name()
+    aztec_step()
 
 @play_button.clicked.connect
 def on_play():
@@ -114,8 +122,7 @@ def on_sequence(value):
 
 @timer.timeout.connect
 def on_timer():
-    az_scene.step()
-    update_step_name()
+    aztec_step()
 
 start_app(app, window)
 
