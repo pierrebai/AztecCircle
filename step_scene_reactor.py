@@ -16,13 +16,6 @@ class step_scene_reactor(base_scene_reactor):
         self.new_items = {}
 
     def increase_size(self, az, size):
-        # TODO: make reactor more general to avoid to have to replicate the aztec actions here.
-        new_items = {}
-        for pos, item in self.items.items():
-            new_pos = (pos[0]+1, pos[1]+1)
-            new_items[new_pos] = item
-            item.setPos(*self.pos_to_scene(new_pos))
-        self.items = new_items
         self.adjust_view_to_fit()
 
     def collision(self, az, pos1, pos2):
@@ -42,4 +35,5 @@ class step_scene_reactor(base_scene_reactor):
     def end_grow(self, az):
         self.items = self.new_items
         self.new_items = {}
+        self.adjust_view_to_fit()
 

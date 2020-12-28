@@ -41,12 +41,12 @@ def draw_inter_horizontal_for_vertical(tiles: dict, x: int, y: int, line: list):
     else:
         line.append('+')
 
-def draw_inter_verticals(tiles: dict, y: int, size: int):
+def draw_inter_verticals(az, tiles: dict, y: int):
     """
     Add the inter-row separator line.
     """
     line = []
-    for x in range(0, size * 2):
+    for x in az.coord_range():
         draw_inter_horizontal_for_vertical(tiles, x, y, line)
         draw_inter_vertical(tiles, (x, y), (x, y+1), line)
     draw_inter_horizontal_for_vertical(tiles, x+1, y, line)
@@ -64,10 +64,10 @@ def draw_aztec_ascii(az):
     """
     tile_colors = [ ['Y', 'R'], ['B', 'G'] ]
     tiles = az.tiles()
-    for y in range(0, az.size() * 2):
-        draw_inter_verticals(tiles, y-1, az.size())
+    for y in az.coord_range():
+        draw_inter_verticals(az, tiles, y-1)
         line = []
-        for x in range(0, az.size() * 2):
+        for x in az.coord_range():
             pos = (x, y)
             draw_inter_horizontal(tiles, (x-1, y), pos, line)
             if pos not in tiles:
@@ -78,7 +78,7 @@ def draw_aztec_ascii(az):
                 line.append(f' {color} ')
         draw_inter_horizontal(tiles, (x, y), (x+1, y), line)
         print(''.join(line))
-    draw_inter_verticals(tiles, y, az.size())
+    draw_inter_verticals(az, tiles, y)
 
 
 class draw_ascii_reactor(reactor):

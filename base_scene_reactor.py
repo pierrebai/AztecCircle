@@ -27,9 +27,9 @@ class base_scene_reactor(reactor):
 
     def adjust_view_to_fit(self):
         self.scene.update()
-        viewEnd = self.view.rect().bottomRight()
-        viewportEnd = self.view.mapFromScene(self.scene.sceneRect().bottomRight())
-        if viewportEnd.x() >= viewEnd.x() or viewportEnd.y() >= viewEnd.y():
+        viewOrigin = self.view.rect().topLeft()
+        sceneOrigin = self.view.mapFromScene(self.scene.sceneRect().translated(-15, -15).topLeft())
+        if viewOrigin.x() >= sceneOrigin.x() or viewOrigin.y() >= sceneOrigin.y():
             self.view.fitInView(QRectF(0, 0, 200, 200).united(self.scene.sceneRect().marginsAdded(QMarginsF(100, 100, 100, 100))), Qt.KeepAspectRatio)
 
     def pos_to_scene(self, pos: tuple) -> tuple:

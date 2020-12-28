@@ -14,8 +14,8 @@ class aztec:
         self._half_tile = {}
         self.tile_generator = tile_generator
         self.reactor = react
+        self._origin = 0
         self.grow_to_size(target_size)
-
 
     def grow_to_size(self, target_size: int):
         """
@@ -32,7 +32,7 @@ class aztec:
         """
         self.reactor.start_grow(self)
         self.increase_size()
-        self._remove_collisions()
+        self.remove_collisions()
         self.move_tiles()
         self.fill_holes()
         self.reactor.end_grow(self)
@@ -43,17 +43,25 @@ class aztec:
         """
         return self._size
 
+    def coord_range(self):
+        """
+        Return an iterator for the coordinates of tiles.
+        """
+        return range(self._origin, self._origin + self._size * 2 - 1)
+
     def tiles(self) -> dict:
         """
         Return all half-tiles of the aztec diamond.
         """
         return self._half_tile
 
-    @staticmethod
-    def is_corner(x: int, y: int, size: int) -> bool:
+    def is_corner(self, x: int, y: int) -> bool:
         """
         Return if a position is in the excluded corner of the diamond.
         """
+        x -=  self._origin
+        y -=  self._origin
+        size = self._size
         if x >= size:
             x = (size * 2 - 1) - x
         if y >= size:
@@ -62,16 +70,13 @@ class aztec:
 
     def increase_size(self):
         """
-        Increase the logical size of diamond and recenter the tiles.
+        Increase the logical size of diamond and move the origin.
         """
         self._size += 1
-        new_tiles = {}
-        for pos, tile in self._half_tile.items():
-            new_tiles[(pos[0]+1, pos[1]+1)] = tile
-        self._half_tile = new_tiles
+        self._origin -= 1
         self.reactor.increase_size(self, self._size)
 
-    def _remove_collisions(self):
+    def remove_collisions(self):
         """
         Remove the tiles about to collide.
         """
@@ -102,9 +107,9 @@ class aztec:
         """
         Verify if a given position is the top-left corner of a hole.
         """
-        if aztec.is_corner(x, y, self._size):
+        if self.is_corner(x, y):
             return False
-        if aztec.is_corner(x+1, y+1, self._size):
+        if self.is_corner(x+1, y+1):
             return False
         if (x,y) in self._half_tile:
             return False
@@ -121,9 +126,8 @@ class aztec:
         Fill holes of the diamond with new tiles as specified by the tile generator.
         (A typical tile generator will produce a random sequence of horizontal and vertical.)
         """
-        double_size = self._size * 2
-        for x in range(0, double_size - 1):
-            for y in range(0, double_size - 1):
+        for x in self.coord_range():
+            for y in self.coord_range():
                 if not self._is_hole(x, y):
                     continue
                 is_horizontal = self.tile_generator.next()
