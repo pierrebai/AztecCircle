@@ -31,10 +31,10 @@ class aztec:
         Grow the aztec diamond size by one.
         """
         self.reactor.start_grow(self)
-        self._increase_size()
+        self.increase_size()
         self._remove_collisions()
-        self._move_tiles()
-        self._fill_holes()
+        self.move_tiles()
+        self.fill_holes()
         self.reactor.end_grow(self)
 
     def size(self) -> int:
@@ -60,7 +60,7 @@ class aztec:
             y = (size * 2 - 1) - y
         return x + y < size - 1
 
-    def _increase_size(self):
+    def increase_size(self):
         """
         Increase the logical size of diamond and recenter the tiles.
         """
@@ -87,7 +87,7 @@ class aztec:
                 del new_tiles[other_pos]
         self._half_tile = new_tiles
 
-    def _move_tiles(self):
+    def move_tiles(self):
         """
         Move the tiles in their desired direction.
         """
@@ -116,7 +116,7 @@ class aztec:
             return False
         return True
 
-    def _fill_holes(self):
+    def fill_holes(self):
         """
         Fill holes of the diamond with new tiles as specified by the tile generator.
         (A typical tile generator will produce a random sequence of horizontal and vertical.)
