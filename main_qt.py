@@ -30,8 +30,18 @@ add_stretch(gen_layout)
 
 stats_dock, stats_layout = create_dock("Statistics")
 
-tiles_count_label = create_text("Tiles count: ", str(0), str(0), stats_layout)
+tiles_count_label = create_text("Tiles count", str(0), str(0), stats_layout)
 tiles_count_label.setEnabled(False)
+frozen_blue_count_label = create_text("Frozen blue", str(0), str(0), stats_layout)
+frozen_blue_count_label.setEnabled(False)
+frozen_yellow_count_label = create_text("Frozen yellow", str(0), str(0), stats_layout)
+frozen_yellow_count_label.setEnabled(False)
+frozen_green_count_label = create_text("Frozen green", str(0), str(0), stats_layout)
+frozen_green_count_label.setEnabled(False)
+frozen_red_count_label = create_text("Frozen red", str(0), str(0), stats_layout)
+frozen_red_count_label.setEnabled(False)
+pi_approximation_label = create_text("PI approximation", str(0), str(0), stats_layout)
+pi_approximation_label.setEnabled(False)
 add_stretch(stats_layout)
 
 window = create_main_window("Aztec Artic Circle", reactor.widget())
@@ -45,6 +55,17 @@ def aztec_step():
     stepper.step()
     select_in_list(stepper.step_name, step_name_list)
     tiles_count_label.setText(str(stepper.az.count_tiles()))
+   
+    frozen_counts = stepper.az.frozen_counts
+    frozen_yellow_count_label.setText(str(frozen_counts[0][0] // 2))
+    frozen_red_count_label.setText(str(frozen_counts[0][1] // 2))
+    frozen_blue_count_label.setText(str(frozen_counts[1][0] // 2))
+    frozen_green_count_label.setText(str(frozen_counts[1][1] // 2))
+
+    if stepper.step_state == 0:
+        total_frozen = frozen_counts[0][0] + frozen_counts[0][1] + frozen_counts[1][0] + frozen_counts[1][1]
+        pi_approximation = 4. * (1. - (total_frozen / stepper.az.count_squares()))
+        pi_approximation_label.setText(str(pi_approximation))
 
 @reset_button.clicked.connect
 def on_reset():

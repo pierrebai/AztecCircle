@@ -57,22 +57,49 @@ class aztec_canvas(QWidget):
                 wx += tile_size
             wy += tile_size
 
+        # Faster rectangle drawing by accumulating them.
+        # But... would need to optimize line drawing too
+        # for this to be worthwhile...
+
+        # def flush_rect(previous_brush, rx):
+        #     if not previous_brush:
+        #         return
+        #     painter.fillRect(rx, wy, wx - rx, tile_size, previous_brush)
+
+        # wy = start_y
+        # for y in az.full_range():
+        #     wx = start_x
+        #     rx = None
+        #     previous_brush = None
+        #     for x in az.full_range():
+        #         tile = tiles[x][y]
+        #         new_brush = aztec_canvas.tile_to_brush(tile) if tile else None
+        #         if new_brush != previous_brush:
+        #             flush_rect(previous_brush, rx)
+        #             rx = wx
+        #             previous_brush = new_brush
+        #         wx += tile_size
+        #     flush_rect(previous_brush, rx)
+        #     wy += tile_size
+
     def adjust_view_to_fit(self, az, size: int):
         w = self.rect().width()
         h = self.rect().height()
-        self.tile_size = min(w, h) // ((size + 1) * 2)
+        self.tile_size = min(40, min(w, h) // ((size + 1) * 2))
+        aztec_canvas.black_pen = QPen(QColor(0, 0, 0), max(1, self.tile_size / 10))
 
     def paint_tile(self, painter: QPainter, wx: int, wy: int, tile, tile_size: int):
         painter.fillRect(wx, wy, tile_size, tile_size, aztec_canvas.tile_to_brush(tile))
 
-        painter.setPen(aztec_canvas.black_pen)
-        start, end = aztec_canvas.tile_border_ranges[tile.is_horizontal][tile.is_high_part]
-        for i in range(start, end):
-            x1 = wx + aztec_canvas.tile_border_points[i  ][0] * tile_size
-            y1 = wy + aztec_canvas.tile_border_points[i  ][1] * tile_size
-            x2 = wx + aztec_canvas.tile_border_points[i+1][0] * tile_size
-            y2 = wy + aztec_canvas.tile_border_points[i+1][1] * tile_size
-            painter.drawLine(x1, y1, x2, y2)
+        if tile_size > 5:
+            painter.setPen(aztec_canvas.black_pen)
+            start, end = aztec_canvas.tile_border_ranges[tile.is_horizontal][tile.is_high_part]
+            for i in range(start, end):
+                x1 = wx + aztec_canvas.tile_border_points[i  ][0] * tile_size
+                y1 = wy + aztec_canvas.tile_border_points[i  ][1] * tile_size
+                x2 = wx + aztec_canvas.tile_border_points[i+1][0] * tile_size
+                y2 = wy + aztec_canvas.tile_border_points[i+1][1] * tile_size
+                painter.drawLine(x1, y1, x2, y2)
 
 
 class canvas_reactor(reactor):

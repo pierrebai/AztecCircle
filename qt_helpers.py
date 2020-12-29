@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer, Qt, QMargins
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIntValidator
 
@@ -53,11 +53,16 @@ def create_number_range(title: str, low: int, high: int, value: int, layout: QLa
     return widget
 
 def create_text(title: str, example: str, value: str, layout: QLayout) -> QLineEdit:
-    create_label(title, layout)
+    container = QWidget()
+    container_layout = QHBoxLayout(container)
+    layout.setSpacing(0)
+    layout.setContentsMargins(QMargins(0, 0, 0, 0))
+    create_label(title, container_layout)
     widget = QLineEdit()
     widget.setText(value)
     widget.setPlaceholderText(example)
-    layout.addWidget(widget)
+    container_layout.addWidget(widget)
+    layout.addWidget(container)
     return widget
 
 def create_number_text(title: str, low: int, high: int, value: int, layout: QLayout) -> QLineEdit:

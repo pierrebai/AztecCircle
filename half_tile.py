@@ -6,14 +6,23 @@ class half_tile:
         self.is_horizontal = is_horizontal
         self.is_positive = is_positive
         self.is_high_part = is_high_part
-        self.movement = half_tile._tile_to_movements[is_horizontal][is_positive]
-        self.placement = half_tile._tile_to_placements[is_horizontal][is_positive][is_high_part]
+        self.is_frozen = False
+
+    def copy(self):
+        return half_tile(self.is_horizontal, self.is_positive, self.is_high_part)
 
     def move_position(self, x: int, y: int) -> tuple:
         """
         Move a position in the desired direction of the tile.
         """
-        return (x + self.movement[0], y + self.movement[1])
+        dx, dy = half_tile._tile_to_movements[self.is_horizontal][self.is_positive]
+        return (x + dx, y + dy)
+
+    def hole_placement(self) -> tuple:
+        """
+        Return the placement of this half-tile in the 2x2 hole.
+        """
+        return half_tile._tile_to_placements[self.is_horizontal][self.is_positive][self.is_high_part]
 
     def is_opposite(self, other) -> bool:
         """
@@ -21,6 +30,12 @@ class half_tile:
         That is, if the tile would collide if next to each other in the correct positions.
         """
         return self.is_positive != other.is_positive and self.is_horizontal == other.is_horizontal
+
+    def is_same_type(self, other) -> bool:
+        """
+        Verify if the tile is of the same type as the other.
+        """
+        return self.is_positive == other.is_positive and self.is_horizontal == other.is_horizontal
 
     def is_half(self, other) -> bool:
         """

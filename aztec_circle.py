@@ -1,4 +1,4 @@
-from half_tile import available_tiles
+from half_tile import available_tiles, half_tile
 from reactor import reactor
 
 class aztec:
@@ -11,6 +11,7 @@ class aztec:
         Create a filled aztec diamond of the given size.
         """
         self._size = 0
+        self.frozen_counts = [[0, 0], [0, 0]]
 
         self.tile_generator = tile_generator
         self.reactor = react
@@ -23,6 +24,10 @@ class aztec:
         self.grow_to_size(target_size)
 
     def _allocate_tiles(self, amount: int):
+        """
+        Allocate the 2D tile arrays. Over-allocate them to avoid copying large
+        arrays too often.
+        """
         if amount % 2:
             amount += 1
 
@@ -36,6 +41,10 @@ class aztec:
 
     @staticmethod
     def reallocate_data(old_amount: int, new_amount: int, old_data: list, old_tmp: list):
+        """
+        Reallocate 2D arrays. Over-allocate them to avoid copying large arrays too often.
+        Return the amount of skip to find the previous data in the center of the new arrays.
+        """
         skip = (new_amount - old_amount) // 2
 
         new_squares = []
@@ -137,6 +146,7 @@ class aztec:
         self._origin -= 1
         if self._origin < 2:
             self._allocate_tiles(len(self._squares) * 2)
+
         self.reactor.increase_size(self, self._size)
 
     def remove_collisions(self):
@@ -156,8 +166,8 @@ class aztec:
                 if tile.is_opposite(other_tile):
                     self.reactor.collision(self, x, y)
                     self.reactor.collision(self, other_x, other_y)
-                    tiles[x][y] = None
-                    tiles[other_x][other_y] = None
+                    tiles[x][y] = 0
+                    tiles[other_x][other_y] = 0
 
     def move_tiles(self):
         """
@@ -166,7 +176,7 @@ class aztec:
         dest_tiles = self._tmp_squares
         for y in self.full_range():
             for x in self.partial_range(y):
-                dest_tiles[x][y] = None
+                dest_tiles[x][y] = 0
 
         tiles = self._squares
         for y in self.full_range():
@@ -188,15 +198,30 @@ class aztec:
         tiles = self._squares
         for y in self.full_range():
             for x in self.partial_range(y):
-                if tiles[x][y] or tiles[x+1][y] or tiles[x][y+1] or tiles[x+1][y+1]:
-                    continue
-                is_horizontal = self.tile_generator.is_next_horizontal()
-                tile_to_place = available_tiles[is_horizontal]
-                for t in tile_to_place:
-                    new_x = x + t.placement[0]
-                    new_y = y + t.placement[1]
-                    tiles[new_x][new_y] = t
-                    self.reactor.fill(self, new_x, new_y, t)
+                if tiles[x][y] == 0 and tiles[x+1][y] == 0 and tiles[x][y+1] == 0 and tiles[x+1][y+1] == 0:
+                    self._add_two_tiles(tiles, x, y)
+
+    def _add_two_tiles(self, tiles, x, y):
+        """
+        Add two new tiles at the specified position.
+        """
+        is_horizontal = self.tile_generator.is_next_horizontal()
+        tile_to_place = available_tiles[is_horizontal]
+        for t in tile_to_place:
+            dx, dy = t.hole_placement()
+            new_x = x + dx
+            new_y = y + dy
+            t = t.copy()
+            tiles[new_x][new_y] = t
+            self._check_frozen(tiles, t, new_x, new_y)
+            self.reactor.fill(self, new_x, new_y, t)
+
+    def _check_frozen(self, tiles, t, x, y):
+        future_x, future_y = t.move_position(x, y)
+        maybe_frozen_tile = tiles[future_x][future_y]
+        if maybe_frozen_tile is None or (maybe_frozen_tile != 0 and maybe_frozen_tile.is_frozen and maybe_frozen_tile.is_same_type(t)):
+            t.is_frozen = True
+            self.frozen_counts[t.is_horizontal][t.is_positive] += 1
 
     def _noop(self):
         """
