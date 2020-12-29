@@ -66,7 +66,6 @@ class base_scene_reactor(reactor):
         return items
 
     def adjust_view_to_fit(self):
-        self.scene.update()
         viewOrigin = self.view.rect().topLeft()
         sceneOrigin = self.view.mapFromScene(self.scene.sceneRect().translated(-15, -15).topLeft())
         if viewOrigin.x() >= sceneOrigin.x() or viewOrigin.y() >= sceneOrigin.y():
