@@ -26,6 +26,9 @@ class base_scene_reactor(reactor):
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
 
+    def widget(self):
+        return self.view
+
     def reallocate_scene(self):
         self.scene = QGraphicsScene()
 
