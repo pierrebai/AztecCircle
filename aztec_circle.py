@@ -6,6 +6,11 @@ class aztec:
     Aztec artic circle tiling, as per the Mathologer you-tube video.
     """
 
+    #################################################################
+    #
+    # Initialization
+    #
+
     def __init__(self, target_size: int, tile_generator, react = reactor()):
         """
         Create a filled aztec diamond of the given size.
@@ -67,23 +72,10 @@ class aztec:
 
         return skip, new_squares, new_tmp_squares
 
-    def grow_to_size(self, target_size: int):
-        """
-        Grow the aztec diamond to the given size.
-        Does nothing if the target size is smaller.
-        TODO: allow rewinding to a smaller size.
-        """
-        while self._size < target_size:
-            self.grow()
-
-    def grow(self):
-        """
-        Grow the aztec diamond size by one.
-        """
-        self.increase_size()
-        self.remove_collisions()
-        self.move_tiles()
-        self.fill_holes()
+    #################################################################
+    #
+    # Informations
+    #
 
     def size(self) -> int:
         """
@@ -103,13 +95,31 @@ class aztec:
         """
         size = self._size
         double_size = size * 2
-        return double_size * double_size - (size * (size-1) // 2)
+        return double_size * double_size - (size * (size-1) * 2)
 
     def count_tiles(self) -> int:
         """
         Return the number of tiles in the aztec diamond.
         """
         return self.count_squares() // 2
+
+    def count_frozen_tiles_by_type(self) -> int:
+        """
+        Return the number of frozen tiles in the aztec diamond by tile type/color.
+        Returned in the order: yellow, red, blue, green
+        """
+        counts = self.frozen_counts
+        yellow_count = counts[0][0] // 2
+        red_count    = counts[0][1] // 2
+        blue_count   = counts[1][0] // 2
+        green_count  = counts[1][1] // 2
+        return yellow_count, red_count, blue_count, green_count
+
+    def count_frozen_tiles(self) -> int:
+        """
+        Return the number of frozen tiles in the aztec diamond.
+        """
+        return sum(self.count_frozen_tiles_by_type())
 
     def full_range(self):
         """
@@ -119,7 +129,8 @@ class aztec:
 
     def partial_range(self, x_or_y: int):
         """
-        Return an iterator for the sub-range of valid squares coordinates of tiles.
+        Return an iterator for the sub-range of valid squares coordinates of tiles
+        for a given row or column.
         """
         size = self._size
         double_size = size * 2
@@ -135,6 +146,29 @@ class aztec:
         Return all half-tiles of the aztec diamond.
         """
         return self._squares
+
+    #################################################################
+    #
+    # Algorithm
+    #
+
+    def grow_to_size(self, target_size: int):
+        """
+        Grow the aztec diamond to the given size.
+        Does nothing if the target size is smaller.
+        TODO: allow rewinding to a smaller size.
+        """
+        while self._size < target_size:
+            self.grow()
+
+    def grow(self):
+        """
+        Grow the aztec diamond size by one.
+        """
+        self.increase_size()
+        self.remove_collisions()
+        self.move_tiles()
+        self.fill_holes()
 
     def increase_size(self):
         """

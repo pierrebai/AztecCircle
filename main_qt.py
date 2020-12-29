@@ -56,15 +56,15 @@ def aztec_step():
     select_in_list(stepper.step_name, step_name_list)
     tiles_count_label.setText(str(stepper.az.count_tiles()))
    
-    frozen_counts = stepper.az.frozen_counts
-    frozen_yellow_count_label.setText(str(frozen_counts[0][0] // 2))
-    frozen_red_count_label.setText(str(frozen_counts[0][1] // 2))
-    frozen_blue_count_label.setText(str(frozen_counts[1][0] // 2))
-    frozen_green_count_label.setText(str(frozen_counts[1][1] // 2))
+    yc, rc, bc, gc = stepper.az.count_frozen_tiles_by_type()
+    frozen_yellow_count_label.setText(str(yc))
+    frozen_red_count_label.setText(str(rc))
+    frozen_blue_count_label.setText(str(bc))
+    frozen_green_count_label.setText(str(gc))
 
     if stepper.step_state == 0:
-        total_frozen = frozen_counts[0][0] + frozen_counts[0][1] + frozen_counts[1][0] + frozen_counts[1][1]
-        pi_approximation = 4. * (1. - (total_frozen / stepper.az.count_squares()))
+        total_frozen = yc + rc + bc + gc
+        pi_approximation = 4. * (1. - (total_frozen / stepper.az.count_tiles()))
         pi_approximation_label.setText(str(pi_approximation))
 
 @reset_button.clicked.connect
