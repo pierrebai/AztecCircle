@@ -87,5 +87,5 @@ class draw_ascii_reactor(reactor):
     Draw the aztec tiling in ASCII at the end of each growth.
     """
 
-    def end_grow(self, az):
+    def fills_done(self, az):
         draw_aztec_ascii(az)

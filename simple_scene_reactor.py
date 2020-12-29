@@ -7,7 +7,7 @@ class simple_scene_reactor(base_scene_reactor):
         super(simple_scene_reactor, self).__init__(*args, **kwargs)
         self.reset()
 
-    def end_grow(self, az):
+    def fills_done(self, az):
         self.scene = QGraphicsScene()
         tiles = az.tiles()
         for x in az.full_range():

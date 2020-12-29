@@ -18,7 +18,6 @@ class aztec_circle_stepper:
         self.az = aztec(1, self.generator, self.reactor)
 
     def _increase_size_step(self):
-        self.reactor.start_grow(self.az)
         self.az.increase_size()
 
     def _remove_collisions_step(self):
@@ -29,7 +28,6 @@ class aztec_circle_stepper:
 
     def _fill_holes_step(self):
         self.az.fill_holes()
-        self.reactor.end_grow(self.az)
 
     steps = {
         0: (_increase_size_step, "Grow diamond"),

@@ -32,9 +32,6 @@ class step_scene_reactor(base_scene_reactor):
         skip, self.items, self.new_items = aztec.reallocate_data(old_amount, new_amount, self.items, self.new_items)
         self.center = new_amount // 2
 
-    def start_grow(self, az):
-        pass
-
     def increase_size(self, az, size):
         self.adjust_view_to_fit()
 
@@ -54,7 +51,7 @@ class step_scene_reactor(base_scene_reactor):
         items = self.create_scene_tile(x - center, y - center, tile)
         self.new_items[x][y] = items
 
-    def end_grow(self, az):
+    def fills_done(self, az):
         self.items, self.new_items = self.new_items, self.items
         self.adjust_view_to_fit()
 

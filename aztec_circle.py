@@ -80,12 +80,10 @@ class aztec:
         """
         Grow the aztec diamond size by one.
         """
-        self.reactor.start_grow(self)
         self.increase_size()
         self.remove_collisions()
         self.move_tiles()
         self.fill_holes()
-        self.reactor.end_grow(self)
 
     def size(self) -> int:
         """
@@ -168,6 +166,7 @@ class aztec:
                     self.reactor.collision(self, other_x, other_y)
                     tiles[x][y] = 0
                     tiles[other_x][other_y] = 0
+        self.reactor.collisions_done(self)
 
     def move_tiles(self):
         """
@@ -189,6 +188,7 @@ class aztec:
                 dest_tiles[new_x][new_y] = tile
         self._squares = dest_tiles
         self._tmp_squares = tiles
+        self.reactor.moves_done(self)
 
     def fill_holes(self):
         """
@@ -200,6 +200,7 @@ class aztec:
             for x in self.partial_range(y):
                 if tiles[x][y] == 0 and tiles[x+1][y] == 0 and tiles[x][y+1] == 0 and tiles[x+1][y+1] == 0:
                     self._add_two_tiles(tiles, x, y)
+        self.reactor.fills_done(self)
 
     def _add_two_tiles(self, tiles, x, y):
         """

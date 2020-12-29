@@ -6,7 +6,7 @@ from tile_generator import sequence_tile_generator
 seed = 7
 az = aztec(200, sequence_tile_generator(seed, None), reactor())
 
-#draw_ascii_reactor().end_grow(az)
+#draw_ascii_reactor().fills_done(az)
 
 print("Origin:     " + str(az._origin))
 print("Allocated:  " + str(len(az._squares)))

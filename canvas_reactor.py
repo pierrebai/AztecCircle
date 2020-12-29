@@ -121,16 +121,13 @@ class canvas_reactor(reactor):
     def increase_size(self, az, size):
         self.canvas.adjust_view_to_fit(az, size)
 
-    def collision(self, az, x, y):
+    def collisions_done(self, az):
         self.canvas.update()
 
-    def move(self, az, x1, y1, x2, y2):
+    def moves_done(self, az):
         self.canvas.update()
 
-    def fill(self, az, x, y, tile):
-        self.canvas.update()
-
-    def end_grow(self, az):
+    def fills_done(self, az):
         self.canvas.update()
 
 

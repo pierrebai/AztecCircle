@@ -10,12 +10,6 @@ class reactor:
         """
         pass
 
-    def start_grow(self, az):
-        """
-        Called before the aztec diamond grows.
-        """
-        pass
-
     def increase_size(self, az, size):
         """
         Called after the aztec diamond size has been increased and its tiles recentered.
@@ -29,21 +23,33 @@ class reactor:
         """
         pass
 
+    def collisions_done(self, az):
+        """
+        Called when the all collisions are done.
+        """
+        pass
+
     def move(self, az, x1, y1, x2, y2):
         """
         Called when a tile is about to move from one position to another.
         """
         pass
 
-    def fill(self, az, x, y, tile):
+    def moves_done(self, az):
         """
-        Called when a new tile has been added.
+        Called when the all movements are done.
         """
         pass
 
-    def end_grow(self, az):
+    def fill(self, az, x, y, tile):
         """
-        Called after the aztec diamond has grown.
+        Called when a new tile has been added to fill a hole.
+        """
+        pass
+
+    def fills_done(self, az):
+        """
+        Called when the all hole fillings are done.
         """
         pass
 
@@ -51,9 +57,6 @@ class reactor:
 class debug_reactor(reactor):
     def reallocate(self, az, old_amount, new_amount):
         print(f"Reallocate from {old_amount} to {new_amount}")
-
-    def start_grow(self, az):
-        print("Start grow")
 
     def increase_size(self, az, size):
         print(f"Increase size to {size}")
@@ -66,6 +69,3 @@ class debug_reactor(reactor):
 
     def fill(self, az, x, y, tile):
         print(f"Fill at {x}/{y}")
-
-    def end_grow(self, az):
-        print("End grow")
