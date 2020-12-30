@@ -1,16 +1,12 @@
 from .reactor import reactor
+from .qt_drawings import qt_drawings
 
 from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF, QPainter
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsItem, QGraphicsRectItem, QGraphicsPolygonItem, QGraphicsLineItem
 from PyQt5.QtCore import QMarginsF, QRectF, QPointF, QLineF, Qt
 
 
-tile_size = 10
-class base_scene_reactor(reactor):
-    tile_colors = [ QColor(235, 180, 40), QColor(255, 84, 46), QColor(68, 125, 255), QColor(83, 223, 56) ]
-    tile_brushes = [ [QBrush(tile_colors[0]), QBrush(tile_colors[1])], [QBrush(tile_colors[2]), QBrush(tile_colors[3])] ]
-
-    black_pen = QPen(QColor(0, 0, 0))
+class base_scene_reactor(reactor, qt_drawings):
 
     def __init__(self):
         self.scene = QGraphicsScene()
@@ -43,12 +39,12 @@ class base_scene_reactor(reactor):
 
         x, y = self.pos_to_scene(x, y)
 
-        width  = 2 * tile_size if tile.is_horizontal else tile_size
-        height = tile_size if tile.is_horizontal else 2 * tile_size
+        width  = 2 * qt_drawings.tile_size if tile.is_horizontal else qt_drawings.tile_size
+        height = qt_drawings.tile_size if tile.is_horizontal else 2 * qt_drawings.tile_size
         item = QGraphicsRectItem(0, 0, width, height)
         item.setPos(x, y)
-        item.setBrush(base_scene_reactor.tile_to_brush(tile))
-        item.setPen(base_scene_reactor.black_pen)
+        item.setBrush(qt_drawings.tile_to_brush(tile))
+        item.setPen(qt_drawings.black_pen)
         items.append(item)
 
         for item in items:
@@ -64,9 +60,4 @@ class base_scene_reactor(reactor):
             self.view.fitInView(self.scene.sceneRect().marginsAdded(QMarginsF(50, 50, 50, 50)), Qt.KeepAspectRatio)
 
     def pos_to_scene(self, x: int, y: int) -> tuple:
-        return (x * tile_size, y * tile_size)
-
-    @staticmethod
-    def tile_to_brush(tile) -> QBrush:
-        return base_scene_reactor.tile_brushes[tile.is_horizontal][tile.is_positive]
-
+        return (x * qt_drawings.tile_size, y * qt_drawings.tile_size)

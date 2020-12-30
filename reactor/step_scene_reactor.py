@@ -1,4 +1,4 @@
-from .base_scene_reactor import base_scene_reactor, tile_size
+from .base_scene_reactor import base_scene_reactor
 from aztec_circle import aztec
 
 from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF
@@ -6,17 +6,6 @@ from PyQt5.QtWidgets import QGraphicsPolygonItem
 from PyQt5.QtCore import QRectF, QPointF, QLineF, Qt
 
 class step_scene_reactor(base_scene_reactor):
-    red_color = QColor(255, 40, 40)
-    red_brush = QBrush(red_color)
-    red_pen = QPen(red_color)
-    cross_delta_1 = 3
-    cross_delta_2 = 1
-    cross_polygon = QPolygonF([
-         QPointF(cross_delta_2, cross_delta_1), QPointF(cross_delta_1, cross_delta_2), QPointF(tile_size / 2, cross_delta_1),
-         QPointF(tile_size - cross_delta_1, cross_delta_2), QPointF(tile_size - cross_delta_2, cross_delta_1), QPointF(tile_size - cross_delta_1, tile_size / 2),
-         QPointF(tile_size - cross_delta_2, tile_size - cross_delta_1), QPointF(tile_size - cross_delta_1, tile_size - cross_delta_2), QPointF(tile_size / 2, tile_size - cross_delta_1),
-         QPointF(cross_delta_1, tile_size - cross_delta_2), QPointF(cross_delta_2, tile_size - cross_delta_1), QPointF(cross_delta_1, tile_size / 2),
-    ])
 
     def __init__(self, show_boundary = False, *args, **kwargs):
         super(step_scene_reactor, self).__init__(*args, **kwargs)
@@ -36,10 +25,10 @@ class step_scene_reactor(base_scene_reactor):
 
     def increase_size(self, az, size):
         if self.show_boundary:
-            coord = -tile_size * (self.center + size)
-            width = tile_size * size * 2
+            coord = -qt_drawings.tile_size * (self.center + size)
+            width = qt_drawings.tile_size * size * 2
             if not self.boundary:
-                self.boundary = self.scene.addRect(coord, coord, width, width, base_scene_reactor.black_pen)
+                self.boundary = self.scene.addRect(coord, coord, width, width, qt_drawings.black_pen)
             else:
                 self.boundary.setRect(coord, coord, width, width)
         self.adjust_view_to_fit()

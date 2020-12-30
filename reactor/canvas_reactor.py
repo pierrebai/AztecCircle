@@ -1,28 +1,26 @@
 from .reactor import reactor
+from .qt_drawings import qt_drawings
 
 from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF, QPainter
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import QMarginsF, QRectF, QPointF, QLineF, Qt
 
 
-class aztec_canvas(QWidget):
+class aztec_canvas(QWidget, qt_drawings):
     """
     A Qt widget that can draw the tiles of an aztec diamond.
     """
-
-    tile_colors = [ QColor(235, 180, 40), QColor(255, 84, 46), QColor(68, 125, 255), QColor(83, 223, 56) ]
-    tile_brushes = [ [QBrush(tile_colors[0]), QBrush(tile_colors[1])], [QBrush(tile_colors[2]), QBrush(tile_colors[3])] ]
-
-    black_pen = QPen(QColor(0, 0, 0))
-
-    @staticmethod
-    def tile_to_brush(tile) -> QBrush:
-        return aztec_canvas.tile_brushes[tile.is_horizontal][tile.is_positive]
 
     def __init__(self, *args, **kwargs):
         super(aztec_canvas, self).__init__(*args, **kwargs)
         self.tile_size = 10
         self.az = None
+
+    def adjust_view_to_fit(self, az, size: int):
+        w = self.rect().width()
+        h = self.rect().height()
+        self.tile_size = min(40, min(w, h) // ((size + 1) * 2))
+        qt_drawings.black_pen = QPen(QColor(0, 0, 0), max(1, self.tile_size / 10))
 
     def paintEvent(self, event):
         az = self.az
@@ -31,7 +29,7 @@ class aztec_canvas(QWidget):
 
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
-        painter.setPen(aztec_canvas.black_pen)
+        painter.setPen(qt_drawings.black_pen)
 
         tiles = az.tiles()
 
@@ -45,7 +43,7 @@ class aztec_canvas(QWidget):
             for x in az.full_range():
                 tile = tiles[x][y]
                 if tile and tile.is_first_part:
-                    self.paint_tile(painter, wx, wy, tile, tile_size)
+                    qt_drawings.paint_tile(painter, wx, wy, tile, tile_size)
                 wx += tile_size
             wy += tile_size
 
@@ -66,7 +64,7 @@ class aztec_canvas(QWidget):
         #     for x in az.full_range():
         #         tile = tiles[x][y]
         #         if tile.is_first_part:
-        #             new_brush = aztec_canvas.tile_to_brush(tile) if tile else None
+        #             new_brush = qt_drawings.tile_to_brush(tile) if tile else None
         #             if new_brush != previous_brush:
         #                 flush_rect(previous_brush, rx)
         #                 rx = wx
@@ -74,20 +72,6 @@ class aztec_canvas(QWidget):
         #         wx += tile_size
         #     flush_rect(previous_brush, rx)
         #     wy += tile_size
-
-    def adjust_view_to_fit(self, az, size: int):
-        w = self.rect().width()
-        h = self.rect().height()
-        self.tile_size = min(40, min(w, h) // ((size + 1) * 2))
-        aztec_canvas.black_pen = QPen(QColor(0, 0, 0), max(1, self.tile_size / 10))
-
-    def paint_tile(self, painter: QPainter, wx: int, wy: int, tile, tile_size: int):
-        width  = 2 * tile_size if tile.is_horizontal else tile_size
-        height = tile_size if tile.is_horizontal else 2 * tile_size
-        painter.fillRect(wx, wy, width, height, aztec_canvas.tile_to_brush(tile))
-
-        if tile_size > 5:
-            painter.drawRect(wx, wy, width, height)
 
 
 class canvas_reactor(reactor):

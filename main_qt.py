@@ -6,9 +6,9 @@ from qt_helpers import *
 
 app = create_app()
 
-#reactor = step_scene_reactor()
+reactor = step_scene_reactor()
 #reactor = simple_scene_reactor()
-reactor = canvas_reactor()
+#reactor = canvas_reactor()
 stepper = aztec_circle_stepper(reactor)
 steps = list(map(lambda i: i[1][1], sorted(stepper.steps.items())))
 
