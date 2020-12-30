@@ -1,13 +1,16 @@
-After listening to the artic circle theorem on the Mathologer you-tube channel, I decided to write
-a small Python program to generate such diagrams.
+After learning about the aztec artic circle theorem on the Mathologer YouTube channel,
+I decided to write a small Python program to generate such diagrams.
 
-There are two versions of the program:
+There are multiple versions of the program:
 
-- One that runs on the command-line that outputs a text representation of the resulting diagram.
-- One that runs in a Qt application to draw the diagram and gives more control on the output.
+- ```main.py```: runs on the command-line that outputs a text representation of the resulting diagram.
+- ```main_qt.py```: runs in a Qt application to draw the diagram and gives more control on the output.
+- ```main_record.py```: outputs all actions applied to the diagram, one per line.
+- ```main_replay.py```: reads the actions from its standard input and re-outputs them again.
+- ```main_replay_qt.py```: reads the actions from its standard input and draws the resulting diagram.
 
 For the command-line version, all you need is a recent Python interpreter. I used Python 3.7.8, but
-the most recent one, 3.9.1 shoudl work too.
+the most recent one, 3.9.1 should work too.
 
 For the Qt version, you will need to install the required dependencies. Here are some instructions
 explaining what and how to install what is needed:
