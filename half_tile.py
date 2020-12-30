@@ -1,15 +1,21 @@
 class half_tile:
+    #                            vertical            horizontal          
+    #                          down      up         down      up
     _tile_to_movements  = [ [ (-1, 0), (1, 0) ], [ (0, -1), (0, 1) ] ]
-    _tile_to_placements = [ [ [ (0, 0), (0, 1) ], [ (1, 0), (1, 1) ] ], [ [ (0, 0), (1, 0) ], [ (0, 1), (1, 1) ] ] ]
 
-    def __init__(self, is_horizontal: bool, is_positive: bool, is_high_part):
+    #                                         vertical                                 horizontal          
+    #                                down                 up                     down                 up
+    #                            1st     2nd         1st     2nd             1st     2nd         1st     2nd
+    _tile_to_placements = [ [ [ (0, 1), (0, 0) ], [ (1, 1), (1, 0) ] ], [ [ (1, 0), (0, 0) ], [ (1, 1), (0, 1) ] ] ]
+
+    def __init__(self, is_horizontal: bool, is_positive: bool, is_first_part, is_frozen: bool = False):
         self.is_horizontal = is_horizontal
-        self.is_positive = is_positive
-        self.is_high_part = is_high_part
-        self.is_frozen = False
+        self.is_positive   = is_positive
+        self.is_first_part = is_first_part
+        self.is_frozen     = is_frozen
 
     def copy(self):
-        return half_tile(self.is_horizontal, self.is_positive, self.is_high_part)
+        return half_tile(self.is_horizontal, self.is_positive, self.is_first_part, self.is_frozen)
 
     def move_position(self, x: int, y: int) -> tuple:
         """
@@ -22,7 +28,7 @@ class half_tile:
         """
         Return the placement of this half-tile in the 2x2 hole.
         """
-        return half_tile._tile_to_placements[self.is_horizontal][self.is_positive][self.is_high_part]
+        return half_tile._tile_to_placements[self.is_horizontal][self.is_positive][self.is_first_part]
 
     def is_opposite(self, other) -> bool:
         """
@@ -44,7 +50,7 @@ class half_tile:
                 and not be the same tile. The relative position (horizontal
                 or vertical) of the tiles must be taken into consideration.
         """
-        return self.is_positive == other.is_positive and self.is_horizontal == other.is_horizontal and self.is_high_part == False and other.is_high_part == True
+        return self.is_positive == other.is_positive and self.is_horizontal == other.is_horizontal and self.is_first_part == False and other.is_first_part == True
 
     def draw(self):
         """

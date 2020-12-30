@@ -55,7 +55,7 @@ class recording_reactor(reactor):
     def _tile_to_text(tile):
         return ' '.join([
             'vh'[tile.is_horizontal],
-            'lh'[tile.is_high_part],
+            'lh'[tile.is_first_part],
             'mf'[tile.is_frozen],
             'du'[tile.is_positive],
         ])

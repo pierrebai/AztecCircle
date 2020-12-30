@@ -12,21 +12,13 @@ class aztec_canvas(QWidget):
     """
 
     tile_colors = [ QColor(235, 180, 40), QColor(255, 84, 46), QColor(68, 125, 255), QColor(83, 223, 56) ]
-    tile_pens = [ [QPen(tile_colors[0].darker(120)), QPen(tile_colors[1].darker(120))], [QPen(tile_colors[2].darker(120)), QPen(tile_colors[3].darker(120))] ]
     tile_brushes = [ [QBrush(tile_colors[0]), QBrush(tile_colors[1])], [QBrush(tile_colors[2]), QBrush(tile_colors[3])] ]
 
     black_pen = QPen(QColor(0, 0, 0))
 
-    tile_border_points = [(0, 0), (1, 0), (1, 1), (0, 1), (0, 0), (1, 0), (1, 1), (0, 1)]
-    tile_border_ranges = [[(3, 6), (1, 4)], [(2, 5), (0, 3)]]
-
     @staticmethod
     def tile_to_brush(tile) -> QBrush:
         return aztec_canvas.tile_brushes[tile.is_horizontal][tile.is_positive]
-
-    @staticmethod
-    def tile_to_pen(tile) -> QPen:
-        return aztec_canvas.tile_pens[tile.is_horizontal][tile.is_positive]
 
     def __init__(self, *args, **kwargs):
         super(aztec_canvas, self).__init__(*args, **kwargs)
@@ -40,6 +32,7 @@ class aztec_canvas(QWidget):
 
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        painter.setPen(aztec_canvas.black_pen)
 
         tiles = az.tiles()
 
@@ -52,7 +45,7 @@ class aztec_canvas(QWidget):
             wx = start_x
             for x in az.full_range():
                 tile = tiles[x][y]
-                if tile:
+                if tile and tile.is_first_part:
                     self.paint_tile(painter, wx, wy, tile, tile_size)
                 wx += tile_size
             wy += tile_size
@@ -73,11 +66,12 @@ class aztec_canvas(QWidget):
         #     previous_brush = None
         #     for x in az.full_range():
         #         tile = tiles[x][y]
-        #         new_brush = aztec_canvas.tile_to_brush(tile) if tile else None
-        #         if new_brush != previous_brush:
-        #             flush_rect(previous_brush, rx)
-        #             rx = wx
-        #             previous_brush = new_brush
+        #         if tile.is_first_part:
+        #             new_brush = aztec_canvas.tile_to_brush(tile) if tile else None
+        #             if new_brush != previous_brush:
+        #                 flush_rect(previous_brush, rx)
+        #                 rx = wx
+        #                 previous_brush = new_brush
         #         wx += tile_size
         #     flush_rect(previous_brush, rx)
         #     wy += tile_size
@@ -89,17 +83,12 @@ class aztec_canvas(QWidget):
         aztec_canvas.black_pen = QPen(QColor(0, 0, 0), max(1, self.tile_size / 10))
 
     def paint_tile(self, painter: QPainter, wx: int, wy: int, tile, tile_size: int):
-        painter.fillRect(wx, wy, tile_size, tile_size, aztec_canvas.tile_to_brush(tile))
+        width  = 2 * tile_size if tile.is_horizontal else tile_size
+        height = tile_size if tile.is_horizontal else 2 * tile_size
+        painter.fillRect(wx, wy, width, height, aztec_canvas.tile_to_brush(tile))
 
         if tile_size > 5:
-            painter.setPen(aztec_canvas.black_pen)
-            start, end = aztec_canvas.tile_border_ranges[tile.is_horizontal][tile.is_high_part]
-            for i in range(start, end):
-                x1 = wx + aztec_canvas.tile_border_points[i  ][0] * tile_size
-                y1 = wy + aztec_canvas.tile_border_points[i  ][1] * tile_size
-                x2 = wx + aztec_canvas.tile_border_points[i+1][0] * tile_size
-                y2 = wy + aztec_canvas.tile_border_points[i+1][1] * tile_size
-                painter.drawLine(x1, y1, x2, y2)
+            painter.drawRect(wx, wy, width, height)
 
 
 class canvas_reactor(reactor):

@@ -109,10 +109,10 @@ class aztec:
         Returned in the order: yellow, red, blue, green
         """
         counts = self.frozen_counts
-        yellow_count = counts[0][0] // 2
-        red_count    = counts[0][1] // 2
-        blue_count   = counts[1][0] // 2
-        green_count  = counts[1][1] // 2
+        yellow_count = counts[0][0]
+        red_count    = counts[0][1]
+        blue_count   = counts[1][0]
+        green_count  = counts[1][1]
         return yellow_count, red_count, blue_count, green_count
 
     def count_frozen_tiles(self) -> int:
@@ -196,8 +196,9 @@ class aztec:
                 if not other_tile:
                     continue
                 if tile.is_opposite(other_tile):
-                    self.reactor.collision(self, x, y)
-                    self.reactor.collision(self, other_x, other_y)
+                    if tile.is_first_part:
+                        self.reactor.collision(self, x, y)
+                        self.reactor.collision(self, other_x, other_y)
                     tiles[x][y] = 0
                     tiles[other_x][other_y] = 0
         self.reactor.collisions_done(self)
@@ -218,7 +219,8 @@ class aztec:
                 if not tile:
                     continue
                 new_x, new_y = tile.move_position(x, y)
-                self.reactor.move(self, x, y, new_x, new_y)
+                if tile.is_first_part:
+                    self.reactor.move(self, x, y, new_x, new_y)
                 dest_tiles[new_x][new_y] = tile
         self._squares = dest_tiles
         self._tmp_squares = tiles
@@ -242,21 +244,23 @@ class aztec:
         """
         is_horizontal = self.tile_generator.is_next_horizontal()
         tile_to_place = available_tiles[is_horizontal]
-        for t in tile_to_place:
-            dx, dy = t.hole_placement()
+        for tile in tile_to_place:
+            dx, dy = tile.hole_placement()
             new_x = x + dx
             new_y = y + dy
-            t = t.copy()
-            tiles[new_x][new_y] = t
-            self._check_frozen(tiles, t, new_x, new_y)
-            self.reactor.fill(self, new_x, new_y, t)
+            tile = tile.copy()
+            tiles[new_x][new_y] = tile
+            self._check_frozen(tiles, tile, new_x, new_y)
+            if tile.is_first_part:
+                self.reactor.fill(self, new_x, new_y, tile)
 
-    def _check_frozen(self, tiles, t, x, y):
-        future_x, future_y = t.move_position(x, y)
+    def _check_frozen(self, tiles, tile, x, y):
+        future_x, future_y = tile.move_position(x, y)
         maybe_frozen_tile = tiles[future_x][future_y]
-        if maybe_frozen_tile is None or (maybe_frozen_tile != 0 and maybe_frozen_tile.is_frozen and maybe_frozen_tile.is_same_type(t)):
-            t.is_frozen = True
-            self.frozen_counts[t.is_horizontal][t.is_positive] += 1
+        if maybe_frozen_tile is None or (maybe_frozen_tile != 0 and maybe_frozen_tile.is_frozen and maybe_frozen_tile.is_same_type(tile)):
+            tile.is_frozen = True
+            if tile.is_first_part:
+                self.frozen_counts[tile.is_horizontal][tile.is_positive] += 1
 
     def _noop(self):
         """

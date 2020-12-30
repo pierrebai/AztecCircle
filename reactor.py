@@ -108,7 +108,7 @@ class debug_reactor(reactor):
     def _tile_to_text(tile):
         return ' '.join([
             ['verti',  'horiz' ][tile.is_horizontal],
-            ['low ',   'high'  ][tile.is_high_part],
+            ['low ',   'high'  ][tile.is_first_part],
             ['moving', 'frozen'][tile.is_frozen],
             ['down',   'up  '  ][tile.is_positive],
         ])

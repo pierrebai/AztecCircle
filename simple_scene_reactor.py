@@ -13,6 +13,7 @@ class simple_scene_reactor(base_scene_reactor):
         for x in az.full_range():
             for y in az.partial_range(x):
                 tile = tiles[x][y]
-                self.create_scene_tile(x, y, tile)
+                if tile.is_first_part:
+                    self.create_scene_tile(x, y, tile)
         self.view.setScene(self.scene)
         self.adjust_view_to_fit()
