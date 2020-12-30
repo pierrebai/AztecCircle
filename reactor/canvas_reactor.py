@@ -1,5 +1,4 @@
-from aztec_circle import aztec
-from reactor import reactor
+from .reactor import reactor
 
 from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF, QPainter
 from PyQt5.QtWidgets import QWidget
@@ -103,7 +102,7 @@ class canvas_reactor(reactor):
     def reset(self):
         pass
 
-    def reallocate(self, az: aztec, old_amount: int, new_amount: int):
+    def reallocate(self, az, old_amount: int, new_amount: int):
         self.center = new_amount // 2
         self.canvas.az = az
 

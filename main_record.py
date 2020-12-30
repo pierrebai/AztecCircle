@@ -1,6 +1,6 @@
 from aztec_circle import aztec
-from recording_reactor import recording_reactor
-from tile_generator import sequence_tile_generator
+from aztec_circle import sequence_tile_generator
+from reactor import recording_reactor
 
 import sys
 

@@ -1,4 +1,4 @@
-from reactor import reactor
+from .reactor import reactor
 
 from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF, QPainter
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsItem, QGraphicsRectItem, QGraphicsPolygonItem, QGraphicsLineItem

@@ -1,4 +1,4 @@
-from reactor import reactor
+from .reactor import reactor
 
 def separator_type(tiles: list, x1: int, y1: int, x2: int, y2: int, horiz_sep: bool) -> int:
     """

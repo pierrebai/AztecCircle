@@ -1,4 +1,4 @@
-from base_scene_reactor import base_scene_reactor
+from .base_scene_reactor import base_scene_reactor
 
 from PyQt5.QtWidgets import QGraphicsScene
 

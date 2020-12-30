@@ -1,5 +1,5 @@
-from aztec_circle import aztec
-from tile_generator import sequence_tile_generator
+from .aztec_circle import aztec
+from .tile_generator import sequence_tile_generator
 
 class aztec_circle_stepper:
     """

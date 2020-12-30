@@ -1,5 +1,4 @@
-from half_tile import available_tiles, half_tile
-from reactor import reactor
+from .half_tile import available_tiles, half_tile
 
 class aztec:
     """
@@ -11,7 +10,7 @@ class aztec:
     # Initialization
     #
 
-    def __init__(self, target_size: int, tile_generator, react = reactor()):
+    def __init__(self, target_size: int, tile_generator, react):
         """
         Create a filled aztec diamond of the given size.
         """

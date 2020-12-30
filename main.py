@@ -1,6 +1,6 @@
 from aztec_circle import aztec
-from draw_ascii_reactor import draw_ascii_reactor
-from tile_generator import sequence_tile_generator
+from aztec_circle import sequence_tile_generator
+from reactor import draw_ascii_reactor
 
 import sys
 

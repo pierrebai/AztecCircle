@@ -1,5 +1,5 @@
-from recording_reactor import recording_player
-from step_scene_reactor import step_scene_reactor
+from reactor import recording_player
+from reactor import step_scene_reactor
 from qt_helpers import *
 
 app = create_app()

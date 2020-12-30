@@ -1,5 +1,5 @@
-from reactor import reactor
-from half_tile import half_tile
+from .reactor import reactor
+from aztec_circle import half_tile
 import sys
 
 class recording_reactor(reactor):

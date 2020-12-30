@@ -1,7 +1,7 @@
-from aztec_circle_stepper import aztec_circle_stepper
-from step_scene_reactor import step_scene_reactor
-from simple_scene_reactor import simple_scene_reactor
-from canvas_reactor import canvas_reactor
+from aztec_circle import aztec_circle_stepper
+from reactor import step_scene_reactor
+from reactor import simple_scene_reactor
+from reactor import canvas_reactor
 from qt_helpers import *
 
 app = create_app()

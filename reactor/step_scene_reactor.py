@@ -1,4 +1,4 @@
-from base_scene_reactor import base_scene_reactor, tile_size
+from .base_scene_reactor import base_scene_reactor, tile_size
 from aztec_circle import aztec
 
 from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF
@@ -30,7 +30,7 @@ class step_scene_reactor(base_scene_reactor):
         self.new_items = []
         self.boundary = None
 
-    def reallocate(self, az: aztec, old_amount: int, new_amount: int):
+    def reallocate(self, az, old_amount: int, new_amount: int):
         skip, self.items, self.new_items = aztec.reallocate_data(old_amount, new_amount, self.items, self.new_items)
         self.center = new_amount // 2
 

@@ -1,4 +1,4 @@
-from recording_reactor import recording_player
+from reactor import recording_player
 from reactor import debug_reactor
 
 reactor = debug_reactor()
