@@ -7,6 +7,9 @@ from PyQt5.QtCore import QMarginsF, QRectF, Qt
 
 
 class base_scene_reactor(reactor, qt_drawings):
+    """
+    Base class for reactor using Qt graphics scene and graphics items.
+    """
 
     def __init__(self):
         self.scene = QGraphicsScene()
@@ -35,8 +38,6 @@ class base_scene_reactor(reactor, qt_drawings):
         self.reallocate_scene()
 
     def create_scene_tile(self, x: int, y: int, tile) -> QGraphicsItem:
-        items = []
-
         x, y = self.pos_to_scene(x, y)
 
         width  = 2 * qt_drawings.tile_size if tile.is_horizontal else qt_drawings.tile_size
@@ -45,12 +46,17 @@ class base_scene_reactor(reactor, qt_drawings):
         item.setPos(x, y)
         item.setBrush(qt_drawings.tile_to_brush(tile))
         item.setPen(qt_drawings.black_pen)
-        items.append(item)
 
-        for item in items:
-            self.scene.addItem(item)
+        self.scene.addItem(item)
 
-        return items
+        return item
+
+    @staticmethod
+    def create_cross():
+        item = QGraphicsPolygonItem(qt_drawings.cross_polygon)
+        item.setBrush(qt_drawings.red_brush)
+        item.setPen(qt_drawings.red_pen)
+        return item
 
     def adjust_view_to_fit(self):
         viewOrigin = self.view.rect().topLeft()

@@ -1,9 +1,12 @@
 from .base_scene_reactor import base_scene_reactor
-from .qt_drawings import qt_drawings
 from aztec_circle import aztec
+from .qt_drawings import qt_drawings
 
 
 class step_scene_reactor(base_scene_reactor):
+    """
+    Reactor using a Qt graphics scene to show step-by-step changes.
+    """
 
     def __init__(self, show_boundary = False, *args, **kwargs):
         super(step_scene_reactor, self).__init__(*args, **kwargs)
@@ -32,20 +35,19 @@ class step_scene_reactor(base_scene_reactor):
         self.adjust_view_to_fit()
 
     def collision(self, az, x, y):
-        for item in self.items[x][y]:
-            self.scene.removeItem(item)
+        item = self.items[x][y]
+        self.scene.removeItem(item)
 
     def move(self, az, x1, y1, x2, y2):
         center = self.center
-        items = self.items[x1][y1]
-        for item in items:
-            item.setPos(*self.pos_to_scene(x2 - center, y2 - center))
-        self.new_items[x2][y2] = items
+        item = self.items[x1][y1]
+        item.setPos(*self.pos_to_scene(x2 - center, y2 - center))
+        self.new_items[x2][y2] = item
 
     def fill(self, az, x, y, tile):
         center = self.center
-        items = self.create_scene_tile(x - center, y - center, tile)
-        self.new_items[x][y] = items
+        item = self.create_scene_tile(x - center, y - center, tile)
+        self.new_items[x][y] = item
 
     def fills_done(self, az):
         self.items, self.new_items = self.new_items, self.items

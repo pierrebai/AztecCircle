@@ -4,6 +4,10 @@ from PyQt5.QtWidgets import QGraphicsScene
 
 
 class simple_scene_reactor(base_scene_reactor):
+    """
+    Reactor using a Qt graphics scene to show changes after each full growth.
+    """
+
     def __init__(self, *args, **kwargs):
         super(simple_scene_reactor, self).__init__(*args, **kwargs)
         self.reset()

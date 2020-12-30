@@ -19,7 +19,7 @@ class qt_drawings:
 
     red_color = QColor(255, 40, 40)
     red_brush = QBrush(red_color)
-    red_pen = QPen(red_color)
+    red_pen = QPen(red_color.darker(130))
     cross_delta_1 = 3
     cross_delta_2 = 1
     cross_polygon = QPolygonF([
