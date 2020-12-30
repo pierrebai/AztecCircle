@@ -18,21 +18,30 @@ class step_scene_reactor(base_scene_reactor):
          QPointF(cross_delta_1, tile_size - cross_delta_2), QPointF(cross_delta_2, tile_size - cross_delta_1), QPointF(cross_delta_1, tile_size / 2),
     ])
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, show_boundary = False, *args, **kwargs):
         super(step_scene_reactor, self).__init__(*args, **kwargs)
         self.center = 0
+        self.show_boundary = show_boundary
         self.reset()
 
     def reset(self):
         super(step_scene_reactor, self).reset()
         self.items = []
         self.new_items = []
+        self.boundary = None
 
     def reallocate(self, az: aztec, old_amount: int, new_amount: int):
         skip, self.items, self.new_items = aztec.reallocate_data(old_amount, new_amount, self.items, self.new_items)
         self.center = new_amount // 2
 
     def increase_size(self, az, size):
+        if self.show_boundary:
+            coord = -tile_size * (self.center + size)
+            width = tile_size * size * 2
+            if not self.boundary:
+                self.boundary = self.scene.addRect(coord, coord, width, width, base_scene_reactor.black_pen)
+            else:
+                self.boundary.setRect(coord, coord, width, width)
         self.adjust_view_to_fit()
 
     def collision(self, az, x, y):

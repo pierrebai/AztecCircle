@@ -1,5 +1,5 @@
 from aztec_circle import aztec
-from reactor import recording_reactor
+from recording_reactor import recording_reactor
 from tile_generator import sequence_tile_generator
 
 import sys
