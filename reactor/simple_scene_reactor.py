@@ -2,6 +2,7 @@ from .base_scene_reactor import base_scene_reactor
 
 from PyQt5.QtWidgets import QGraphicsScene
 
+
 class simple_scene_reactor(base_scene_reactor):
     def __init__(self, *args, **kwargs):
         super(simple_scene_reactor, self).__init__(*args, **kwargs)

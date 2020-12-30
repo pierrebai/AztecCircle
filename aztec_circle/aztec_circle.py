@@ -178,7 +178,7 @@ class aztec:
         if self._origin < 2:
             self._allocate_tiles(len(self._squares) * 2)
 
-        self.reactor.increase_size(self, self._size)
+        self.reactor.increase_size(self, self._origin, self._size)
 
     def remove_collisions(self):
         """

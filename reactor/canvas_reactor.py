@@ -1,9 +1,8 @@
 from .reactor import reactor
 from .qt_drawings import qt_drawings
 
-from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF, QPainter
+from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtCore import QMarginsF, QRectF, QPointF, QLineF, Qt
 
 
 class aztec_canvas(QWidget, qt_drawings):
@@ -20,7 +19,7 @@ class aztec_canvas(QWidget, qt_drawings):
         w = self.rect().width()
         h = self.rect().height()
         self.tile_size = min(40, min(w, h) // ((size + 1) * 2))
-        qt_drawings.black_pen = QPen(QColor(0, 0, 0), max(1, self.tile_size / 10))
+        qt_drawings.black_pen.setWidthF(max(1, self.tile_size / 10))
 
     def paintEvent(self, event):
         az = self.az
@@ -90,7 +89,7 @@ class canvas_reactor(reactor):
         self.center = new_amount // 2
         self.canvas.az = az
 
-    def increase_size(self, az, size):
+    def increase_size(self, az, origin, size):
         self.canvas.adjust_view_to_fit(az, size)
 
     def collisions_done(self, az):

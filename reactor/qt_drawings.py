@@ -15,6 +15,7 @@ class qt_drawings:
     tile_brushes = [ [QBrush(tile_colors[0]), QBrush(tile_colors[1])], [QBrush(tile_colors[2]), QBrush(tile_colors[3])] ]
 
     black_pen = QPen(QColor(0, 0, 0))
+    gray_pen = QPen(QColor(180, 180, 180, 180))
 
     red_color = QColor(255, 40, 40)
     red_brush = QBrush(red_color)

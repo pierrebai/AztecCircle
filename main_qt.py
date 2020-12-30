@@ -6,7 +6,7 @@ from qt_helpers import *
 
 app = create_app()
 
-reactor = step_scene_reactor()
+reactor = step_scene_reactor(True)
 #reactor = simple_scene_reactor()
 #reactor = canvas_reactor()
 stepper = aztec_circle_stepper(reactor)

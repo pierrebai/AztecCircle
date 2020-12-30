@@ -12,7 +12,7 @@ class reactor:
         """
         pass
 
-    def increase_size(self, az, size):
+    def increase_size(self, az, origin, size):
         """
         Called after the aztec diamond size has been increased and its tiles recentered.
         """
@@ -74,8 +74,9 @@ class debug_reactor(reactor):
         self.output(f"Reallocate from {old_amount} to {new_amount}")
         self.center = new_amount // 2
 
-    def increase_size(self, az, size):
-        self.output(f"Increase size to {size}")
+    def increase_size(self, az, origin, size):
+        origin = self.center - size
+        self.output(f"Increase size to {size} starting at {origin}")
 
     def collision(self, az, x, y):
         org = self.center

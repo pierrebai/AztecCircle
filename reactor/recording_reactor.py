@@ -21,8 +21,9 @@ class recording_reactor(reactor):
         self.output(f"R {old_amount} {new_amount}")
         self.center = new_amount // 2
 
-    def increase_size(self, az, size):
-        self.output(f"I {size:>8}")
+    def increase_size(self, az, origin, size):
+        origin = -size
+        self.output(f"I {origin:>8} {size:>8}")
 
     def collision(self, az, x, y):
         org = self.center
@@ -75,8 +76,8 @@ class recording_player:
 
     def _replay_increase_size(self, parts):
         az = None
-        size = int(parts[0])
-        self.reactor.increase_size(az, size)
+        origin, size = tuple(map(int, parts))
+        self.reactor.increase_size(az, origin, size)
 
     def _replay_collision(self, parts):
         az = None

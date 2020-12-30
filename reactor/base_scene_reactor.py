@@ -1,9 +1,9 @@
 from .reactor import reactor
 from .qt_drawings import qt_drawings
 
-from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF, QPainter
+from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsItem, QGraphicsRectItem, QGraphicsPolygonItem, QGraphicsLineItem
-from PyQt5.QtCore import QMarginsF, QRectF, QPointF, QLineF, Qt
+from PyQt5.QtCore import QMarginsF, QRectF, Qt
 
 
 class base_scene_reactor(reactor, qt_drawings):

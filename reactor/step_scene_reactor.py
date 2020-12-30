@@ -1,9 +1,7 @@
 from .base_scene_reactor import base_scene_reactor
+from .qt_drawings import qt_drawings
 from aztec_circle import aztec
 
-from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF
-from PyQt5.QtWidgets import QGraphicsPolygonItem
-from PyQt5.QtCore import QRectF, QPointF, QLineF, Qt
 
 class step_scene_reactor(base_scene_reactor):
 
@@ -23,12 +21,12 @@ class step_scene_reactor(base_scene_reactor):
         skip, self.items, self.new_items = aztec.reallocate_data(old_amount, new_amount, self.items, self.new_items)
         self.center = new_amount // 2
 
-    def increase_size(self, az, size):
+    def increase_size(self, az, origin, size):
         if self.show_boundary:
-            coord = -qt_drawings.tile_size * (self.center + size)
-            width = qt_drawings.tile_size * size * 2
+            coord = qt_drawings.tile_size * (origin - self.center) - 8
+            width = qt_drawings.tile_size * size * 2 + 16
             if not self.boundary:
-                self.boundary = self.scene.addRect(coord, coord, width, width, qt_drawings.black_pen)
+                self.boundary = self.scene.addRect(coord, coord, width, width, qt_drawings.gray_pen)
             else:
                 self.boundary.setRect(coord, coord, width, width)
         self.adjust_view_to_fit()
