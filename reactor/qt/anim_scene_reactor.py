@@ -20,6 +20,7 @@ class anim_scene_reactor(step_scene_reactor):
         self.show_movement_arrow = True
         self.show_collision_cross = True
         self.animate = True
+        self.animate_limit = 60
         self.size = 0
 
 
@@ -50,7 +51,7 @@ class anim_scene_reactor(step_scene_reactor):
             self.anim_done_callback()
 
     def _skip_animations(self):
-        return not self.animate or self.size > 60
+        return not self.animate or self.size > self.animate_limit
 
     #################################################################
     #

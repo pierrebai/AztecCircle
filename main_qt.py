@@ -31,6 +31,7 @@ add_stretch(control_layout)
 anim_dock, anim_layout = create_dock("Animation Controls")
 
 animate_option = create_option("Animate", anim_layout)
+animate_limit_box = create_number_range("Stop Animating After Generation #", 0, 10000, reactor.animate_limit, anim_layout)
 show_arrow_option = create_option("Show movement arrow", anim_layout)
 show_cross_option = create_option("Show collision cross", anim_layout)
 add_stretch(anim_layout)
@@ -116,6 +117,10 @@ def on_sequence(value):
 @animate_option.stateChanged.connect
 def on_animate(state):
     reactor.animate = bool(state)
+
+@animate_limit_box.valueChanged.connect
+def on_animate_limit_changed(value):
+    reactor.animate_limit = int(value)
 
 @show_arrow_option.stateChanged.connect
 def on_show_arrow(state):
