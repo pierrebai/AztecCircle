@@ -109,7 +109,6 @@ class anim_scene_reactor(step_scene_reactor):
             lambda value: item.setOpacity(value),
             None
         )
-        anim.start(QVariantAnimation.DeleteWhenStopped)
         
     def fills_done(self, az):
         super(anim_scene_reactor, self).fills_done(az)

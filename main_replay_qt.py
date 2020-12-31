@@ -1,6 +1,6 @@
 from reactor import recording_player
-from reactor import anim_scene_reactor
-from reactor import step_scene_reactor
+from reactor.qt import anim_scene_reactor
+from reactor.qt import step_scene_reactor
 from qt_helpers import *
 
 import sys

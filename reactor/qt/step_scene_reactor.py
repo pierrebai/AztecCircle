@@ -1,6 +1,6 @@
 from .base_scene_reactor import base_scene_reactor
-from aztec_circle import aztec
 from .qt_drawings import qt_drawings
+from aztec_circle import aztec
 
 
 class step_scene_reactor(base_scene_reactor):

@@ -1,4 +1,4 @@
-from .reactor import reactor
+from ..reactor import reactor
 from .qt_drawings import qt_drawings
 
 from PyQt5.QtGui import QPainter
