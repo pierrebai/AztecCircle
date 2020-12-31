@@ -15,7 +15,7 @@ class aztec_circle_stepper:
         self.step_state = 0
         self.reactor.reset()
         self.generator.reset()
-        self.az = aztec(1, self.generator, self.reactor)
+        self.az = aztec(0, self.generator, self.reactor)
 
     def _increase_size_step(self):
         self.az.increase_size()

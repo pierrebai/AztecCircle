@@ -1,21 +1,21 @@
 from .reactor import reactor
+from .recorder import file_recorder, file_player
 from aztec_circle import half_tile
-import sys
 
 class recording_reactor(reactor):
     """
     Write all changes to a file in a short format
     with the same line length for all actions.
     """
-    def __init__(self, file = sys.stdout):
-        self.file = file
+    def __init__(self, recorder = None):
+        self.recorder = recorder if recorder else file_recorder()
         self.center = 0
 
     def reset(self):
-        self.file.seek(0)
+        self.recorder.reset()
 
     def output(self, text):
-        print(f"{text:40}", file=self.file)
+        self.recorder.output(text)
 
     def reallocate(self, az, old_amount, new_amount):
         self.output(f"R {old_amount} {new_amount}")
@@ -65,9 +65,9 @@ class recording_reactor(reactor):
         self.output("E fills")
 
 class recording_player:
-    def __init__(self, reactor, file = sys.stdin):
+    def __init__(self, reactor, player = None):
         self.reactor = reactor
-        self.file = file
+        self.player = player if player else file_player()
 
     def _replay_reallocate(self, parts):
         az = None
@@ -137,7 +137,7 @@ class recording_player:
     }
     
     def step(self):
-        line = self.file.readline()
+        line = self.player.input()
         if line:
             parts = line.split()
             func = recording_player.replay_funcs[parts[0]]

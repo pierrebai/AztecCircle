@@ -1,4 +1,5 @@
 from aztec_circle import aztec_circle_stepper
+from reactor import anim_scene_reactor
 from reactor import step_scene_reactor
 from reactor import simple_scene_reactor
 from reactor import canvas_reactor
@@ -6,7 +7,12 @@ from qt_helpers import *
 
 app = create_app()
 
-reactor = step_scene_reactor(True)
+timer = create_timer(1)
+timer.setSingleShot(True)
+playing = False
+
+reactor = anim_scene_reactor(lambda: playing and timer.start(), 500, True)
+#reactor = step_scene_reactor(True)
 #reactor = simple_scene_reactor()
 #reactor = canvas_reactor()
 stepper = aztec_circle_stepper(reactor)
@@ -19,7 +25,7 @@ step_button = create_button("Step", control_layout)
 play_button = create_button("Play", control_layout)
 stop_button = create_button("Stop", control_layout)
 reset_button = create_button("Reset", control_layout)
-delay_box = create_number_range("Step delay (ms)", 0, 1000, 20, control_layout)
+delay_box = create_number_range("Step delay (ms)", 0, 10000, 500, control_layout)
 add_stretch(control_layout)
 
 gen_dock, gen_layout = create_dock("Tiles Generation")
@@ -49,7 +55,6 @@ add_dock(window, control_dock)
 add_dock(window, gen_dock)
 add_dock(window, stats_dock)
 
-timer = create_timer(int(delay_box.value()))
 
 def aztec_step():
     stepper.step()
@@ -77,15 +82,19 @@ def on_step():
 
 @play_button.clicked.connect
 def on_play():
+    global playing
+    playing = True
     timer.start()
 
 @stop_button.clicked.connect
 def on_stop():
+    global playing
+    playing = False
     timer.stop()
 
 @delay_box.valueChanged.connect
 def on_delay_changed(value):
-    timer.setInterval(value)
+    reactor.anim_duration = int(value)
 
 @seed_box.textChanged.connect
 def on_seed(value):

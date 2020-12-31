@@ -55,8 +55,7 @@ def create_number_range(title: str, low: int, high: int, value: int, layout: QLa
 def create_text(title: str, example: str, value: str, layout: QLayout) -> QLineEdit:
     container = QWidget()
     container_layout = QHBoxLayout(container)
-    layout.setSpacing(0)
-    layout.setContentsMargins(QMargins(0, 0, 0, 0))
+    container_layout.setContentsMargins(0, 0, 0, 0)
     create_label(title, container_layout)
     widget = QLineEdit()
     widget.setText(value)
