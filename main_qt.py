@@ -18,7 +18,7 @@ reactor = anim_scene_reactor(lambda: playing and timer.start(), 500, True)
 stepper = aztec_circle_stepper(reactor)
 steps = list(map(lambda i: i[1][1], sorted(stepper.steps.items())))
 
-control_dock, control_layout = create_dock("Controls")
+control_dock, control_layout = create_dock("Play Controls")
 
 step_name_list = create_list("Current Step", steps, control_layout)
 step_button = create_button("Step", control_layout)
@@ -27,6 +27,13 @@ stop_button = create_button("Stop", control_layout)
 reset_button = create_button("Reset", control_layout)
 delay_box = create_number_range("Step delay (ms)", 0, 10000, 500, control_layout)
 add_stretch(control_layout)
+
+anim_dock, anim_layout = create_dock("Animation Controls")
+
+animate_option = create_option("Animate", anim_layout)
+show_arrow_option = create_option("Show movement arrow", anim_layout)
+show_cross_option = create_option("Show collision cross", anim_layout)
+add_stretch(anim_layout)
 
 gen_dock, gen_layout = create_dock("Tiles Generation")
 
@@ -47,6 +54,7 @@ add_stretch(stats_layout)
 
 window = create_main_window("Aztec Artic Circle", reactor.widget())
 add_dock(window, control_dock)
+add_dock(window, anim_dock)
 add_dock(window, gen_dock)
 add_dock(window, stats_dock)
 
@@ -104,6 +112,18 @@ def on_seed(value):
 @gen_sequence.textChanged.connect
 def on_sequence(value):
     stepper.generator.set_sequence(value)
+
+@animate_option.stateChanged.connect
+def on_animate(state):
+    reactor.animate = bool(state)
+
+@show_arrow_option.stateChanged.connect
+def on_show_arrow(state):
+    reactor.show_movement_arrow = bool(state)
+
+@show_cross_option.stateChanged.connect
+def on_animate(state):
+    reactor.show_collision_cross = bool(state)
 
 @timer.timeout.connect
 def on_timer():

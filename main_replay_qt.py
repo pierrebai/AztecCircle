@@ -10,6 +10,8 @@ anim_duration  = int(sys.argv[1]) if len(sys.argv) > 1 else 100
 app = create_app()
 timer = create_timer(1)
 reactor = anim_scene_reactor(lambda: timer.start(), anim_duration, True) if anim_duration else step_scene_reactor(True)
+reactor.show_collision_cross = False
+reactor.show_movement_arrow = False
 window = create_main_window("Aztec Artic Circle", reactor.widget())
 
 player = recording_player(reactor)

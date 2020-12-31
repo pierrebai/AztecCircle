@@ -74,13 +74,19 @@ def create_number_text(title: str, low: int, high: int, value: int, layout: QLay
     widget.setValidator(QIntValidator(low, high))
     return widget
 
+def create_option(title: str, layout: QLayout, state = True):
+    widget = QCheckBox(title)
+    widget.setChecked(state)
+    layout.addWidget(widget)
+    return widget
+
 def add_stretch(layout: QLayout):
     layout.addStretch()
 
 def create_main_window(title: str, central_widget) -> QMainWindow:
     window = QMainWindow()
     window.setWindowTitle(title)
-    window.resize(800, 600)
+    window.resize(1000, 800)
     window.setCentralWidget(central_widget)
     return window
 

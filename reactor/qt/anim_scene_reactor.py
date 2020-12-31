@@ -17,6 +17,10 @@ class anim_scene_reactor(step_scene_reactor):
         self.anim_duration = anim_duration
         self.anim_duration_speedup = 1.
         self.anims = set()
+        self.show_movement_arrow = True
+        self.show_collision_cross = True
+        self.animate = True
+        self.size = 0
 
 
     #################################################################
@@ -45,6 +49,9 @@ class anim_scene_reactor(step_scene_reactor):
         if self.anim_done_callback and not self.anims:
             self.anim_done_callback()
 
+    def _skip_animations(self):
+        return not self.animate or self.size > 60
+
     #################################################################
     #
     # Reactor
@@ -55,15 +62,22 @@ class anim_scene_reactor(step_scene_reactor):
 
     def increase_size(self, az, origin, size):
         super(anim_scene_reactor, self).increase_size(az, origin, size)
+        self.size = size
         self.anim_duration_speedup = 1. / math.sqrt(size / 4)
         self._check_all_anims_done()
 
     def collision(self, az, x, y):
-        center = self.center
-        tile = az.tiles()[x][y] if az else None
-        cross = anim_scene_reactor.create_cross()
-        cross.setPos(*self.middle_pos_to_scene(x - center, y - center, tile))
-        self.scene.addItem(cross)
+        if self._skip_animations():
+            return super(anim_scene_reactor, self).collision(az, x, y)
+
+        if self.show_collision_cross:
+            center = self.center
+            tile = az.tiles()[x][y] if az else None
+            cross = anim_scene_reactor.create_cross()
+            cross.setPos(*self.middle_pos_to_scene(x - center, y - center, tile))
+            self.scene.addItem(cross)
+        else:
+            cross = None
 
         item = self.items[x][y]
         if not item:
@@ -75,24 +89,29 @@ class anim_scene_reactor(step_scene_reactor):
 
     def _collision_anim_done(self, item, cross):
         self.scene.removeItem(item)
-        self.scene.removeItem(cross)
+        if cross:
+            self.scene.removeItem(cross)
 
     def collisions_done(self, az):
         super(anim_scene_reactor, self).collisions_done(az)
         self._check_all_anims_done()
 
     def move(self, az, x1, y1, x2, y2):
+        if self._skip_animations():
+            return super(anim_scene_reactor, self).move(az, x1, y1, x2, y2)
+
         center = self.center
-        tile = az.tiles()[x1][y1] if az else None
-        arrow = anim_scene_reactor.create_arrow(tile)
-        arrow.setPos(*self.middle_pos_to_scene(x1 - center, y1 - center, tile))
-        self.scene.addItem(arrow)
-        anim = self._prepare_anim(arrow,
-            QPointF(*self.middle_pos_to_scene(x1 - center, y1 - center, tile)),
-            QPointF(*self.middle_pos_to_scene(x2 - center, y2 - center, tile)),
-            lambda value: arrow.setPos(value),
-            lambda: self.scene.removeItem(arrow)
-        )
+        if self.show_movement_arrow:
+            tile = az.tiles()[x1][y1] if az else None
+            arrow = anim_scene_reactor.create_arrow(tile)
+            arrow.setPos(*self.middle_pos_to_scene(x1 - center, y1 - center, tile))
+            self.scene.addItem(arrow)
+            anim = self._prepare_anim(arrow,
+                QPointF(*self.middle_pos_to_scene(x1 - center, y1 - center, tile)),
+                QPointF(*self.middle_pos_to_scene(x2 - center, y2 - center, tile)),
+                lambda value: arrow.setPos(value),
+                lambda: self.scene.removeItem(arrow)
+            )
 
         item = self.items[x1][y1]
         if not item:
@@ -111,6 +130,8 @@ class anim_scene_reactor(step_scene_reactor):
 
     def fill(self, az, x, y, tile):
         super(anim_scene_reactor, self).fill(az, x, y, tile)
+        if self._skip_animations():
+            return
 
         item = self.new_items[x][y]
         if not item:
