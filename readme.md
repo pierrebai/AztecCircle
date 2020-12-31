@@ -7,7 +7,7 @@ There are multiple versions of the program:
 - ```main_qt.py```: runs in a Qt application to draw the diagram and gives more control on the output.
 - ```main_record.py```: outputs all actions applied to the diagram, one per line.
 - ```main_replay.py```: reads the actions from its standard input and re-outputs them again.
-- ```main_replay_qt.py```: reads the actions from its standard input and draws the resulting diagram.
+- ```main_replay_qt.py```: reads the actions from its standard input and animates the resulting diagram.
 
 For the command-line version, all you need is a recent Python interpreter. I used Python 3.7.8, but
 the most recent one, 3.9.1 should work too.

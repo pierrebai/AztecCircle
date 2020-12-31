@@ -64,6 +64,11 @@ def create_text(title: str, example: str, value: str, layout: QLayout) -> QLineE
     layout.addWidget(container)
     return widget
 
+def create_read_only_text(title: str, example: str, value: str, layout: QLayout) -> QLineEdit:
+    widget = create_text(title, example, value, layout)
+    widget.setEnabled(False)
+    return widget
+
 def create_number_text(title: str, low: int, high: int, value: int, layout: QLayout) -> QLineEdit:
     widget = create_text(title, str((low + high)/2), str(value), layout)
     widget.setValidator(QIntValidator(low, high))
