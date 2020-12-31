@@ -44,24 +44,29 @@ def create_button(title: str, layout: QLayout) -> QPushButton:
     layout.addWidget(widget)
     return widget
 
-def create_number_range(title: str, low: int, high: int, value: int, layout: QLayout) -> QSpinBox:
-    create_label(title, layout)
-    widget = QSpinBox()
-    widget.setRange(low, high)
-    widget.setValue(value)
-    layout.addWidget(widget)
-    return widget
-
-def create_text(title: str, example: str, value: str, layout: QLayout) -> QLineEdit:
+def create_horiz_container(layout: QLayout):
     container = QWidget()
     container_layout = QHBoxLayout(container)
     container_layout.setContentsMargins(0, 0, 0, 0)
+    layout.addWidget(container)
+    return container_layout
+
+def create_number_range(title: str, low: int, high: int, value: int, layout: QLayout) -> QSpinBox:
+    container_layout = create_horiz_container(layout)
+    create_label(title, container_layout)
+    widget = QSpinBox()
+    widget.setRange(low, high)
+    widget.setValue(value)
+    container_layout.addWidget(widget)
+    return widget
+
+def create_text(title: str, example: str, value: str, layout: QLayout) -> QLineEdit:
+    container_layout = create_horiz_container(layout)
     create_label(title, container_layout)
     widget = QLineEdit()
     widget.setText(value)
     widget.setPlaceholderText(example)
     container_layout.addWidget(widget)
-    layout.addWidget(container)
     return widget
 
 def create_read_only_text(title: str, example: str, value: str, layout: QLayout) -> QLineEdit:

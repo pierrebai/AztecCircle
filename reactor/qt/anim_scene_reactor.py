@@ -31,7 +31,7 @@ class anim_scene_reactor(step_scene_reactor):
     def _prepare_anim(self, item, start_value, end_value, on_changed, on_finished, duration_fraction = 1.):
         anim = QVariantAnimation()
         self.anims.add(anim)
-        anim.setDuration(self.anim_duration * duration_fraction * self.anim_duration_speedup)
+        anim.setDuration(max(1., self.anim_duration * duration_fraction * self.anim_duration_speedup))
         anim.setStartValue(QVariant(start_value))
         anim.setEndValue(QVariant(end_value))
         if on_changed:
