@@ -3,7 +3,7 @@ from .reactor import reactor
 def separator_type(tiles: list, x1: int, y1: int, x2: int, y2: int, horiz_sep: bool) -> int:
     """
     Determine the type of separation between two adjacent positionin the tiling.
-    
+
     0: empty-to-empty separator
     1: empty-to-tile separator
     2: tile-to-tile separator
@@ -89,3 +89,4 @@ class draw_ascii_reactor(reactor):
 
     def fills_done(self, az):
         draw_aztec_ascii(az)
+
