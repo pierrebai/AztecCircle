@@ -127,7 +127,7 @@ def on_show_arrow(state):
     reactor.show_movement_arrow = bool(state)
 
 @show_cross_option.stateChanged.connect
-def on_animate(state):
+def on_show_cross(state):
     reactor.show_collision_cross = bool(state)
 
 @timer.timeout.connect

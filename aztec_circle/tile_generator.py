@@ -51,7 +51,7 @@ class sequence_tile_generator(random_tile_generator):
         """
         Create a tile generator that will create the given sequence of tiles
         repeatedly. The sequence is described textually with any number
-        letters in h, v, r, which can repeat as desired. The ltter means:
+        letters in h, v, r, which can repeat as desired. The letter means:
 
            h: horizontal
            v: vertical
